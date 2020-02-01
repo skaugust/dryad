@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SimpleDryadMovement : MonoBehaviour
 {
-    private float speed = 1.0f;
+    private float speed = 5.0f;
 
     public BalanceManager balance;
 
