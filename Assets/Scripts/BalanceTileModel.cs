@@ -4,47 +4,155 @@ using UnityEngine;
 
 public class BalanceTileModel
 {
-    private Vector2Int location;
+    public enum Tier
+    {
+        DensePollution, LightPollution, Desolation, LightGrass, DenseGrass, TallGrass, FloweringGrass
+    }
+
+    private static int CalculateTierAffect(Tier tier)
+    {
+        switch (tier)
+        {
+            case Tier.DensePollution:
+                return -8;
+            case Tier.LightPollution:
+                return -4;
+            case Tier.Desolation:
+                return 0;
+            case Tier.LightGrass:
+                return 1;
+            case Tier.DenseGrass:
+                return 2;
+            case Tier.TallGrass:
+                return 4;
+            case Tier.FloweringGrass:
+                return 6;
+        }
+        throw new System.Exception("Unknown tier, " + tier);
+    }
+
+    public Vector2Int location;
+    public TerrainRenderFlags terrainRender;
+
+    private List<BalanceTileModel> adjacentTiles;
+    private List<BalanceTileModel> closeTiles;
+    private List<BalanceTileModel> nearByTiles;
     private Vector2 drawCenter;
+    private Tier tier;
 
     public const float TILES_PER_GAME_UNIT = 5;
     private const float TEXTURE_1000_UNIT_LENGTH = 50 / TILES_PER_GAME_UNIT;
-    private float TEXTURE_1000_HYPOTENUS = Mathf.Sqrt((TEXTURE_1000_UNIT_LENGTH * TEXTURE_1000_UNIT_LENGTH) + (TEXTURE_1000_UNIT_LENGTH * TEXTURE_1000_UNIT_LENGTH));
+    private readonly float TEXTURE_1000_HYPOTENUS = Mathf.Sqrt((TEXTURE_1000_UNIT_LENGTH * TEXTURE_1000_UNIT_LENGTH) + (TEXTURE_1000_UNIT_LENGTH * TEXTURE_1000_UNIT_LENGTH));
+
+    private const int ADJACENT_TILE_MODIFIER = 10;
+    private const int CLOSE_TILE_MODIFIER = 4;
+    private const int NEAR_BY_TILE_MODIFIER = 1;
 
     public BalanceTileModel(Vector2Int location)
     {
+        this.tier = Tier.Desolation;
         this.location = location;
         Vector2 offset = Random.insideUnitCircle * 0.07f;
         drawCenter = new Vector2(location.x / TILES_PER_GAME_UNIT, location.y / TILES_PER_GAME_UNIT) + offset;
     }
 
-    public void Update(BalanceManager manager)
+
+    public void init(List<BalanceTileModel> adjacentTiles, List<BalanceTileModel> closeTiles, List<BalanceTileModel> nearByTiles)
     {
-        // TODO(sky): We currently don't support removing anything from the mask, because neighbours need to be re-generated.
-        int tier = Random.Range(-2, 3);
-        if (tier == -1)
+        this.adjacentTiles = adjacentTiles;
+        this.closeTiles = closeTiles;
+        this.nearByTiles = nearByTiles;
+    }
+
+    private int CalcualteModifier(int extraModifier)
+    {
+        int modifier = extraModifier;
+
+        foreach (BalanceTileModel other in adjacentTiles)
         {
-            // Some amount of pollution.
+            modifier += ADJACENT_TILE_MODIFIER * CalculateTierAffect(other.tier);
         }
-        else if (tier == 0)
+        foreach (BalanceTileModel other in closeTiles)
         {
-            // Desolate, no coverage by anything.
-            manager.ColorTextureMasks(drawCenter, 0);
+            modifier += CLOSE_TILE_MODIFIER * CalculateTierAffect(other.tier);
         }
-        else if (tier == 1)
+        foreach (BalanceTileModel other in nearByTiles)
         {
-            // Small coverage.
-            manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * Random.Range(.2f, .4f)));
+            modifier += NEAR_BY_TILE_MODIFIER * CalculateTierAffect(other.tier);
         }
-        else if (tier == 2)
+
+        // TODO(sky):
+        // * Water
+        // * Tree
+        // * Pollution source
+        // * Factory
+
+        return modifier;
+    }
+
+    private Tier CalculateTierFromModifier(int modifier)
+    {
+        /*
+        So reasonable bounds are -143 to + 123
+        So like heavy pollution should be -80 or so
+        Light pollution is -30 to -80
+        Light grass is 5-15
+        Dense grass is 15-40
+        Tall grass is 40-80
+        Flowering tall grass is 80+
+        */
+
+        if (modifier < -80)
         {
-            // Medium coverage.
-            manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * Random.Range(.5f, .8f)));
+            return Tier.DensePollution;
         }
-        else if (tier == 3)
+        else if (modifier < -30)
         {
-            // Cover entirety of tile and then some. Radius of cirle should be equal to sqrt(2).
-            manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS));
+            return Tier.LightPollution;
+        }
+        else if (modifier < 5)
+        {
+            return Tier.Desolation;
+        }
+        else if (modifier < 15)
+        {
+            return Tier.LightGrass;
+        }
+        else if (modifier < 40)
+        {
+            return Tier.DenseGrass;
+        }
+        else if (modifier < 80)
+        {
+            return Tier.TallGrass;
+        }
+        else
+        {
+            return Tier.FloweringGrass;
+        }
+    }
+
+    // extraModifier comes from Dryad's closeness, etc. TODO(sky): Pass in world power.
+    public void Update(BalanceManager manager, int extraModifier)
+    {
+        int modifier = CalcualteModifier(extraModifier);
+        Tier newTier = CalculateTierFromModifier(modifier);
+
+        if (newTier != this.tier)
+        {
+            if (newTier == Tier.LightGrass)
+            {
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * Random.Range(.2f, .4f)));
+            }
+            else if (newTier == Tier.TallGrass)
+            {
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * Random.Range(.5f, .8f)));
+            }
+            else if (newTier == Tier.DenseGrass || newTier == Tier.FloweringGrass)
+            {
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS));
+            }
+            this.tier = newTier;
         }
     }
 }

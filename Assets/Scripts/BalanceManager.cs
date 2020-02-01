@@ -41,20 +41,28 @@ public class BalanceManager : MonoBehaviour
                 bucketedModelsForUpdates[index].Add(model);
             }
         }
+
+        // TODO(sky): Could probably just iterate over the key/values in the map.
+        for (int i = -100; i <= 100; i++)
+        {
+            for (int j = -100; j <= 100; j++)
+            {
+                Vector2Int location = new Vector2Int(i, j);
+                balanceMap[location].init(getAdjacentTiles(location), getCloseTiles(location), getNearByTiles(location));
+            }
+        }
     }
 
     void FixedUpdate()
     {
-        // TODO(sky): Also update 1/600th of the tiles.
-
         foreach (BalanceTileModel model in getTilesNearby(dryad.transform.position))
         {
-            model.Update(this);
+            model.Update(this, 20);
         }
 
         foreach (BalanceTileModel model in bucketedModelsForUpdates[nextUpdateBucket])
         {
-            model.Update(this);
+            model.Update(this, 0);
         }
         nextUpdateBucket++;
         nextUpdateBucket %= NUM_BUCKETS;
@@ -62,6 +70,66 @@ public class BalanceManager : MonoBehaviour
         // These might have changed.
         natureMaskTexture.Apply();
         pollutionMaskTexture.Apply();
+    }
+
+    public List<BalanceTileModel> getAdjacentTiles(Vector2Int location)
+    {
+        List<BalanceTileModel> result = new List<BalanceTileModel>();
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                if (i != 0 || j != 0)
+                {
+                    Vector2Int target = new Vector2Int(location.x + i, location.y + j);
+                    if (balanceMap.ContainsKey(target))
+                    {
+                        result.Add(balanceMap[target]);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public List<BalanceTileModel> getCloseTiles(Vector2Int location)
+    {
+        List<BalanceTileModel> result = new List<BalanceTileModel>();
+        for (int i = -3; i <= -3; i++)
+        {
+            for (int j = -3; j <= -3; j++)
+            {
+                if (Mathf.Abs(i) >= 1 || Mathf.Abs(j) >= 1)
+                {
+                    Vector2Int target = new Vector2Int(location.x + i, location.y + j);
+                    if (balanceMap.ContainsKey(target))
+                    {
+                        result.Add(balanceMap[target]);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public List<BalanceTileModel> getNearByTiles(Vector2Int location)
+    {
+        List<BalanceTileModel> result = new List<BalanceTileModel>();
+        for (int i = -5; i <= -5; i++)
+        {
+            for (int j = -5; j <= -5; j++)
+            {
+                if (Mathf.Abs(i) >= 3 || Mathf.Abs(j) >= 3)
+                {
+                    Vector2Int target = new Vector2Int(location.x + i, location.y + j);
+                    if (balanceMap.ContainsKey(target))
+                    {
+                        result.Add(balanceMap[target]);
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     public List<BalanceTileModel> getTilesNearby(Vector2 gameCoordinates)
