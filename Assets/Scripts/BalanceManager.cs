@@ -13,6 +13,10 @@ public class BalanceManager : MonoBehaviour
 
     private Dictionary<Vector2Int, BalanceTileModel> balanceMap = new Dictionary<Vector2Int, BalanceTileModel>();
 
+    private int nextUpdateBucket = 0;
+    private const int NUM_BUCKETS = 500;
+    private List<List<BalanceTileModel>> bucketedModelsForUpdates = new List<List<BalanceTileModel>>();
+
     void Start()
     {
         natureMaskTexture = natureMask.sprite.texture;
@@ -21,12 +25,20 @@ public class BalanceManager : MonoBehaviour
         Fill(natureMaskTexture, Color.clear);
         Fill(pollutionMaskTexture, Color.white);
 
+        for (int i = 0; i < NUM_BUCKETS; i++)
+        {
+            bucketedModelsForUpdates.Add(new List<BalanceTileModel>());
+        }
+
         for (int i = -100; i <= 100; i++)
         {
             for (int j = -100; j <= 100; j++)
             {
                 Vector2Int location = new Vector2Int(i, j);
-                balanceMap[location] = new BalanceTileModel(location);
+                BalanceTileModel model = new BalanceTileModel(location);
+                balanceMap[location] = model;
+                int index = Random.Range(0, NUM_BUCKETS);
+                bucketedModelsForUpdates[index].Add(model);
             }
         }
     }
@@ -39,6 +51,13 @@ public class BalanceManager : MonoBehaviour
         {
             model.Update(this);
         }
+
+        foreach (BalanceTileModel model in bucketedModelsForUpdates[nextUpdateBucket])
+        {
+            model.Update(this);
+        }
+        nextUpdateBucket++;
+        nextUpdateBucket %= NUM_BUCKETS;
 
         // These might have changed.
         natureMaskTexture.Apply();

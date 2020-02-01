@@ -41,8 +41,11 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Nature
+  - name: ShortGrass
     uniqueID: 4188118959
+    locked: 0
+  - name: TallGrass
+    uniqueID: 725195471
     locked: 0
   - name: Pollution
     uniqueID: 1766550415
