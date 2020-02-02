@@ -882,6 +882,7 @@ MonoBehaviour:
   ADJACENT_TILE_MODIFIER: 10
   CLOSE_TILE_MODIFIER: 4
   NEAR_BY_TILE_MODIFIER: 1
+  DRYAD_STANDING_MODIFIER: 5
 --- !u!4 &990603106
 Transform:
   m_ObjectHideFlags: 0
@@ -1123,7 +1124,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1214790904
 SpriteRenderer:
   m_ObjectHideFlags: 0

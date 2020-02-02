@@ -39,6 +39,8 @@ public class BalanceTileModel
     private List<BalanceTileModel> closeTiles;
     private List<BalanceTileModel> nearByTiles;
     private Vector2 drawCenter;
+    private Vector2 drawCenter2;
+    private Vector2 drawCenter3;
     private Tier tier;
 
     public const float TILES_PER_GAME_UNIT = 5;
@@ -57,6 +59,10 @@ public class BalanceTileModel
         this.location = location;
         Vector2 offset = UnityEngine.Random.insideUnitCircle * 0.07f;
         drawCenter = new Vector2(location.x / TILES_PER_GAME_UNIT, location.y / TILES_PER_GAME_UNIT) + offset;
+        offset = UnityEngine.Random.insideUnitCircle * 0.5f;
+        drawCenter2 = new Vector2(location.x / TILES_PER_GAME_UNIT, location.y / TILES_PER_GAME_UNIT) + offset;
+        offset = UnityEngine.Random.insideUnitCircle * 0.5f;
+        drawCenter3 = new Vector2(location.x / TILES_PER_GAME_UNIT, location.y / TILES_PER_GAME_UNIT) + offset;
     }
 
 
@@ -151,15 +157,23 @@ public class BalanceTileModel
         {
             if (newTier == Tier.LightGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.4f, .8f)), BalanceManager.MaskType.ShortGrass);
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.ShortGrass);
+                if (UnityEngine.Random.Range(0f,1f) > 0.5)
+                {
+                    manager.ColorTextureMasks(drawCenter2, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.ShortGrass);
+                }
+                if (UnityEngine.Random.Range(0f, 1f) > 0.5)
+                {
+                    manager.ColorTextureMasks(drawCenter2, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.ShortGrass);
+                }
             }
             else if (newTier == Tier.TallGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.2f, 1.8f)), BalanceManager.MaskType.ShortGrass);
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.2f, 1.5f)), BalanceManager.MaskType.ShortGrass);
             }
             else if (newTier == Tier.DenseGrass || newTier == Tier.FloweringGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.2f, 1.8f)), BalanceManager.MaskType.LongGrass);
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f)), BalanceManager.MaskType.LongGrass);
             }
             this.tier = newTier;
         }
