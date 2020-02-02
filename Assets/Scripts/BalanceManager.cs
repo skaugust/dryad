@@ -205,7 +205,7 @@ public class BalanceManager : MonoBehaviour
     }
 
     // |center| should be in game coordinates.
-    public Action<bool> ColorTextureMasks(Vector2 center, int radius, MaskType maskType, bool positive)
+    public void ColorTextureMasks(Vector2 center, int radius, MaskType maskType, bool positive)
     {
         AutoTiledMask mask = maskMap[maskType];
         int relativeX = (int)((center.x + 1.25f) * 100);
@@ -222,7 +222,5 @@ public class BalanceManager : MonoBehaviour
                 }
             }
         }
-
-        return (callbackPositive) => ColorTextureMasks(center, radius, maskType, callbackPositive);
     }
 }

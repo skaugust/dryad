@@ -318,6 +318,12 @@ public class BalanceTileModel
     {
         float modifier = CalcualteModifier(extraModifier);
         Tier newTier = CalculateTierFromModifier(modifier);
+        if (capture == null)
+        {
+            capture = new MaskApplyCapture();
+            capture.model = this;
+            capture.manager = manager;
+        }
 
         if (newTier != this.tier)
         {
@@ -327,74 +333,94 @@ public class BalanceTileModel
             int oldAffect = CalculateTierAffect(this.tier);
             if (newAffect == 0 || Math.Abs(newAffect) < Math.Abs(oldAffect) || (newAffect * oldAffect) < 0)
             {
-                RunColorTextureCallbacks(false);
-                reverse1 = null;
-                reverse2 = null;
-                reverse3 = null;
+                capture.Apply(false);
                 foreach (BalanceTileModel other in this.adjacentTiles)
                 {
-                    other.RunColorTextureCallbacks(true);
+                    if (other.capture != null)
+                    {
+                        other.capture.Apply(true);
+                    }
                 }
+            }
+            else
+            {
+
             }
 
             if (newTier == Tier.DensePollution)
             {
-                reverse1 = manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f)), BalanceManager.MaskType.Pollution, true);
+                capture.range1 = (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f));
+                capture.range2 = 0;
+                capture.range3 = 0;
+                capture.maskType = BalanceManager.MaskType.Pollution;
             }
             else if (newTier == Tier.LightPollution)
             {
-                reverse1 = manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.Pollution, true);
-                if (UnityEngine.Random.Range(0f, 1f) > 0.5)
-                {
-                    reverse2 = manager.ColorTextureMasks(drawCenter2, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.Pollution, true);
-                }
-                if (UnityEngine.Random.Range(0f, 1f) > 0.5)
-                {
-                    reverse3 = manager.ColorTextureMasks(drawCenter3, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.Pollution, true);
-                }
+                capture.range1 = (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f));
+                capture.range2 = UnityEngine.Random.Range(0f, 1f) > 0.5 ? (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)) : 0;
+                capture.range3 = UnityEngine.Random.Range(0f, 1f) > 0.5 ? (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)) : 0;
+                capture.maskType = BalanceManager.MaskType.Pollution;
             }
             else if (newTier == Tier.LightGrass)
             {
-                reverse1 = manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.ShortGrass, true);
-                if (UnityEngine.Random.Range(0f, 1f) > 0.5)
-                {
-                    reverse2 = manager.ColorTextureMasks(drawCenter2, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.ShortGrass, true);
-                }
-                if (UnityEngine.Random.Range(0f, 1f) > 0.5)
-                {
-                    reverse3 = manager.ColorTextureMasks(drawCenter3, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.ShortGrass, true);
-                }
+                capture.range1 = (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f));
+                capture.range2 = UnityEngine.Random.Range(0f, 1f) > 0.5 ? (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)) : 0;
+                capture.range3 = UnityEngine.Random.Range(0f, 1f) > 0.5 ? (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)) : 0;
+                capture.maskType = BalanceManager.MaskType.ShortGrass;
             }
             else if (newTier == Tier.DenseGrass)
             {
-                reverse1 = manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f)), BalanceManager.MaskType.ShortGrass, true);
+                capture.range1 = (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f));
+                capture.range2 = 0;
+                capture.range3 = 0;
+                capture.maskType = BalanceManager.MaskType.ShortGrass;
             }
             else if (newTier == Tier.TallGrass || newTier == Tier.FloweringGrass)
             {
-                reverse1 = manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f)), BalanceManager.MaskType.LongGrass, true);
+                capture.range1 = (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f));
+                capture.range2 = 0;
+                capture.range3 = 0;
+                capture.maskType = BalanceManager.MaskType.LongGrass;
+            }
+            else
+            {
+                capture.range1 = 0;
+                capture.range2 = 0;
+                capture.range3 = 0;
             }
 
             this.tier = newTier;
+            capture.Apply(true);
         }
     }
 
-    private void RunColorTextureCallbacks(bool positive)
+    // The capture is purposefully modifiable, to avoid GC hitches.
+    private MaskApplyCapture capture;
+    private class MaskApplyCapture
     {
-        if (reverse1 != null)
+        public BalanceTileModel model;
+        public BalanceManager manager;
+
+        public int range1;
+        public int range2;
+        public int range3;
+
+        public BalanceManager.MaskType maskType;
+
+        public void Apply(bool positive)
         {
-            reverse1.Invoke(positive);
-        }
-        if (reverse2 != null)
-        {
-            reverse2.Invoke(positive);
-        }
-        if (reverse3 != null)
-        {
-            reverse3.Invoke(positive);
+            if (range1 > 0)
+            {
+                manager.ColorTextureMasks(model.drawCenter, range1, maskType, positive);
+            }
+            if (range2 > 0)
+            {
+                manager.ColorTextureMasks(model.drawCenter2, range2, maskType, positive);
+            }
+            if (range3 > 0)
+            {
+                manager.ColorTextureMasks(model.drawCenter3, range3, maskType, positive);
+            }
         }
     }
-
-    private Action<bool> reverse1 = null;
-    private Action<bool> reverse2 = null;
-    private Action<bool> reverse3 = null;
 }
