@@ -140,18 +140,18 @@ public class BalanceTileModel
         }
         if (closePollution.Any())
         {
-            modifier -= 6;
+            modifier -= 9;
         }
         if (nearByPollution.Any())
         {
-            modifier -= 2;
+            modifier -= 3;
         }
 
         if (nearByFactory.Any())
         {
             if (modifier > 0)
             {
-                modifier = modifier / 1.5f;
+                modifier = modifier / 1.8f;
             }
         }
         if (closeFactory.Any())
@@ -178,7 +178,7 @@ public class BalanceTileModel
         float rand = UnityEngine.Random.Range(0f, 1f);
 
         float lightPollutionLower = -70;
-        float desolationLower = -15;
+        float desolationLower = -10;
         float lightGrassLower = 5;
         float denseGrassLower = 20;
         float tallGrassLower = 40;
