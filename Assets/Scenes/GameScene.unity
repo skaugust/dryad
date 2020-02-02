@@ -10584,6 +10584,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a559a579ef5b384b8c4d26ebaea63ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameTime: 0
   dryad: {fileID: 170425436}
   mana: 10
   treeGroup: {fileID: 664402050}
@@ -19023,7 +19024,7 @@ SpriteRenderer:
   m_SortingLayerID: 209155987
   m_SortingLayer: 7
   m_SortingOrder: -1
-  m_Sprite: {fileID: 21300000, guid: 74b190cb5f6ef7a4baa8bc6f6f663d74, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 89705cf364ff04d4c8aba273108cf7a3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
