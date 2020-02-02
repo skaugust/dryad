@@ -1453,12 +1453,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dryad: {fileID: 170425436}
+  treeGroup: {fileID: 664402050}
+  treePrefab: {fileID: 900389347}
   shortGrassMask: {fileID: 195404940}
   longGrassMask: {fileID: 922481874}
   pollutionMask: {fileID: 1144647168}
-  factoryParentGroup: {fileID: 0}
-  pollutionSpawnParentGroup: {fileID: 2125818022}
-  treeParentGroup: {fileID: 664402050}
+  factoryList: []
+  pollutionList: []
+  treeList: []
   ADJACENT_TILE_MODIFIER: 10
   CLOSE_TILE_MODIFIER: 4
   NEAR_BY_TILE_MODIFIER: 1

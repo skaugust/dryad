@@ -7,6 +7,9 @@ public class BalanceManager : MonoBehaviour
 {
     public GameObject dryad;
 
+    public GameObject treeGroup;
+    public TreeTag treePrefab;
+
     public AutoTiledMask shortGrassMask;
     public AutoTiledMask longGrassMask;
     public AutoTiledMask pollutionMask;
@@ -55,7 +58,7 @@ public class BalanceManager : MonoBehaviour
             for (int j = -TILES_TO_INIT; j <= TILES_TO_INIT; j++)
             {
                 Vector2Int location = new Vector2Int(i, j);
-                BalanceTileModel model = new BalanceTileModel(location);
+                BalanceTileModel model = new BalanceTileModel(location, this);
                 balanceMap[location] = model;
                 int index = UnityEngine.Random.Range(0, NUM_BUCKETS);
                 bucketedModelsForUpdates[index].Add(model);
@@ -64,7 +67,20 @@ public class BalanceManager : MonoBehaviour
 
         foreach (KeyValuePair<Vector2Int, BalanceTileModel> pair in balanceMap)
         {
-            pair.Value.init(this, getAdjacentTiles(pair.Key), getCloseTiles(pair.Key), getNearByTiles(pair.Key), this.factoryList, this.pollutionList, this.treeList);
+            pair.Value.init(getAdjacentTiles(pair.Key), getCloseTiles(pair.Key), getNearByTiles(pair.Key), this.factoryList, this.pollutionList, this.treeList);
+        }
+    }
+
+    public void MakeTree(Vector2Int location)
+    {
+        TreeTag newTree = GameObject.Instantiate(treePrefab);
+        newTree.transform.position = TileToWorldCoords(location);
+        newTree.transform.parent = treeGroup.transform;
+
+        treeList.Add(newTree);
+        foreach (KeyValuePair<Vector2Int, BalanceTileModel> pair in balanceMap)
+        {
+            pair.Value.UpdateTrees(this.treeList);
         }
     }
 
