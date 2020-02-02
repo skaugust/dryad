@@ -116,32 +116,27 @@ public class BalanceTileModel
             modifier += NEAR_BY_TILE_MODIFIER * CalculateTierAffect(other.tier);
         }
 
-        foreach (Transform other in nearByPollution)
+        if (undearneathPollution.Count > 0)
         {
-            modifier -= 10;
+            modifier -= 20;
         }
-
-        foreach (Transform other in undearneathPollution)
-        {
-            modifier -= 12;
-        }
-        foreach (Transform other in nearByPollution)
+        if (closePollution.Count > 0)
         {
             modifier -= 8;
         }
-        foreach (Transform other in closePollution)
+        if (nearByPollution.Count > 0)
         {
             modifier -= 3;
         }
 
-        foreach (Transform other in nearByFactory)
+        if (nearByFactory.Count>0)
         {
             if (modifier > 0)
             {
                 modifier = modifier / 2;
             }
         }
-        foreach (Transform other in closeFactory)
+        if( closeFactory.Count > 0)
         {
             if (modifier > 0)
             {
@@ -163,7 +158,7 @@ public class BalanceTileModel
         /*
         So reasonable bounds are -143 to + 123
         So like heavy pollution should be -80 or so
-        Light pollution is -30 to -80
+        Light pollution is -20 to -80
         Light grass is 5-15
         Dense grass is 15-40
         Tall grass is 40-80
@@ -171,8 +166,8 @@ public class BalanceTileModel
         */
         float rand = UnityEngine.Random.Range(0f, 1f);
 
-        float lightPollutionLower = -80;
-        float desolationLower = -30;
+        float lightPollutionLower = -60;
+        float desolationLower = -15;
         float lightGrassLower = 5;
         float denseGrassLower = 20;
         float tallGrassLower = 40;
