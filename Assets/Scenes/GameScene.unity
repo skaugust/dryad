@@ -1496,8 +1496,7 @@ MonoBehaviour:
   desolaceSound: {fileID: 1348986128}
   forestSound: {fileID: 1073018587}
   grassSound: {fileID: 1988368506}
-  pollutionSound: {fileID: 0}
-  factorySound: {fileID: 0}
+  pollutionSound: {fileID: 1688094723}
 --- !u!58 &170425440
 CircleCollider2D:
   m_ObjectHideFlags: 0

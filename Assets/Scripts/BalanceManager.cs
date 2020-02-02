@@ -148,20 +148,20 @@ public class BalanceManager : MonoBehaviour
             HashSet<BalanceTileModel> underneathTilesSet = new HashSet<BalanceTileModel>(underneathTiles);
             foreach (BalanceTileModel model in nearByTiles.Where(t => !underneathTilesSet.Contains(t)))
             {
-                model.Update(this, channelingMod);
+                model.Update(this, channelingMod, false);
             }
         }
 
         int standingMod = globalPower * (DRYAD_STANDING_MODIFIER + 1 + (isChannelling ? dryadChannellingModifier : 0));
         foreach (BalanceTileModel model in underneathTiles)
         {
-            model.Update(this, standingMod);
+            model.Update(this, standingMod, true);
         }
 
         // This could re-update channelled/stood upon tiles. Unclear if we care.
         foreach (BalanceTileModel model in bucketedModelsForUpdates[nextUpdateBucket])
         {
-            model.Update(this, globalPower);
+            model.Update(this, globalPower, true);
         }
         nextUpdateBucket++;
         nextUpdateBucket %= NUM_BUCKETS;

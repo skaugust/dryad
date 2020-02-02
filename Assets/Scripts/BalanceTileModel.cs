@@ -329,10 +329,12 @@ public class BalanceTileModel
     }
 
     // extraModifier comes from Dryad's closeness, etc. TODO(sky): Pass in world power.
-    public void Update(BalanceManager manager, float extraModifier)
+    public void Update(BalanceManager manager, float extraModifier, bool allowNegative)
     {
         float modifier = CalcualteModifier(extraModifier);
+        if (modifier < 5 && !allowNegative) { return; }
         Tier newTier = CalculateTierFromModifier(modifier);
+
         if (capture == null)
         {
             capture = new MaskApplyCapture();
