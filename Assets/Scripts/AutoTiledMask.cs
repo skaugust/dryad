@@ -10,6 +10,8 @@ public class AutoTiledMask : MonoBehaviour
 
     public Color initColor;
 
+    private const int MASK_SIZE = 250;
+
     void Start()
     {
     }
@@ -19,31 +21,20 @@ public class AutoTiledMask : MonoBehaviour
         // Check for Camera movement, move.
     }
 
+    // https://stackoverflow.com/questions/1082917/mod-of-negative-number-is-melting-my-brain
+    private static int mod(int x, int m)
+    {
+        return (x % m + m) % m;
+    }
+
     public void SetPixel(int x, int y, Color color)
     {
-        int i = 0;
-        while (x < 0)
-        {
-            x += 1000;
-            i--;
-        }
-        while (x >= 1000)
-        {
-            x -= 1000;
-            i++;
-        }
+        int i = Mathf.FloorToInt(x / (float)MASK_SIZE);
+        x = mod(x, MASK_SIZE);
 
-        int j = 0;
-        while (y < 0)
-        {
-            y += 1000;
-            j--;
-        }
-        while (y >= 1000)
-        {
-            y -= 1000;
-            j++;
-        }
+        int j = Mathf.FloorToInt(y / (float)MASK_SIZE);
+        y = mod(y, MASK_SIZE);
+
         Vector2Int location = new Vector2Int(i, j);
         dirty.Add(location);
         if (!maskMap.ContainsKey(location))
@@ -69,10 +60,10 @@ public class AutoTiledMask : MonoBehaviour
         maskCopy.gameObject.SetActive(true);
 
         Texture2D theirTexture = maskPrefab.sprite.texture;
-        Texture2D ourTexture = new Texture2D(theirTexture.width, theirTexture.height, theirTexture.format, false);
+        Texture2D ourTexture = new Texture2D(MASK_SIZE, MASK_SIZE, theirTexture.format, false);
         maskMap[location] = ourTexture;
-        maskCopy.GetComponent<SpriteMask>().sprite = Sprite.Create(ourTexture, new Rect(new Vector2(0, 0), new Vector2(ourTexture.width, ourTexture.height)), new Vector2(.5f, .5f));
-        maskCopy.transform.position += new Vector3(location.x * 10, location.y * 10);
+        maskCopy.GetComponent<SpriteMask>().sprite = Sprite.Create(ourTexture, new Rect(new Vector2(0, 0), new Vector2(MASK_SIZE, MASK_SIZE)), new Vector2(.5f, .5f));
+        maskCopy.transform.position += new Vector3(location.x * 2.5f, location.y * 2.5f);
 
         Fill(ourTexture);
     }
@@ -86,6 +77,5 @@ public class AutoTiledMask : MonoBehaviour
         }
         texture.SetPixels32(clearColorArray);
         texture.Apply();
-
     }
 }

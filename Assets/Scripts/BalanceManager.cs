@@ -6,16 +6,21 @@ public class BalanceManager : MonoBehaviour
 {
     public GameObject dryad;
 
-    public SpriteMask pollutionMask;
-    private Texture2D pollutionMaskTexture;
-
     public AutoTiledMask shortGrassMask;
     public AutoTiledMask longGrassMask;
+    public AutoTiledMask pollutionMask;
+
+    public GameObject factoryParentGroup;
+    [System.NonSerialized]
+    public List<Transform> factoryList = new List<Transform>();
+    public GameObject pollutionSpawnParentGroup;
+    [System.NonSerialized]
+    public List<Transform> pollutionSpawnList = new List<Transform>();
 
     Dictionary<MaskType, AutoTiledMask> maskMap;
     public enum MaskType
     {
-        ShortGrass, LongGrass
+        ShortGrass, LongGrass, Pollution
     }
 
     private Dictionary<Vector2Int, BalanceTileModel> balanceMap = new Dictionary<Vector2Int, BalanceTileModel>();
@@ -34,9 +39,16 @@ public class BalanceManager : MonoBehaviour
         maskMap = new Dictionary<MaskType, AutoTiledMask>();
         maskMap.Add(MaskType.ShortGrass, shortGrassMask);
         maskMap.Add(MaskType.LongGrass, longGrassMask);
+        maskMap.Add(MaskType.Pollution, pollutionMask);
 
-        pollutionMaskTexture = pollutionMask.sprite.texture;
-        Fill(pollutionMaskTexture, Color.white);
+        foreach (Transform child in factoryParentGroup.transform)
+        {
+            factoryList.Add(child);
+        }
+        foreach (Transform child in pollutionSpawnParentGroup.transform)
+        {
+            pollutionSpawnList.Add(child);
+        }
 
         for (int i = 0; i < NUM_BUCKETS; i++)
         {
@@ -61,7 +73,7 @@ public class BalanceManager : MonoBehaviour
             for (int j = -100; j <= 100; j++)
             {
                 Vector2Int location = new Vector2Int(i, j);
-                balanceMap[location].init(getAdjacentTiles(location), getCloseTiles(location), getNearByTiles(location));
+                balanceMap[location].init(getAdjacentTiles(location), getCloseTiles(location), getNearByTiles(location), factoryList, pollutionSpawnList);
             }
         }
     }
@@ -85,7 +97,6 @@ public class BalanceManager : MonoBehaviour
         {
             mask.Apply();
         }
-        pollutionMaskTexture.Apply();
     }
 
     public List<BalanceTileModel> getAdjacentTiles(Vector2Int location)
@@ -183,16 +194,17 @@ public class BalanceManager : MonoBehaviour
     public void ColorTextureMasks(Vector2 center, int radius, MaskType maskType)
     {
         AutoTiledMask mask = maskMap[maskType];
+        int relativeX = (int)((center.x + 1.25f) * 100);
+        int relativeY = (int)((center.y + 1.25f) * 100);
         for (int i = -radius; i <= radius; i++)
         {
             for (int j = -radius; j <= radius; j++)
             {
                 if (Mathf.Sqrt(i * i + j * j) <= radius)
                 {
-                    int x = i + (int)((center.x + 5) * 100);
-                    int y = j + (int)((center.y + 5) * 100);
+                    int x = i + relativeX;
+                    int y = j + relativeY;
                     mask.SetPixel(x, y, Color.white);
-                    pollutionMaskTexture.SetPixel(x, y, Color.clear);
                 }
             }
         }
