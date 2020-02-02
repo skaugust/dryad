@@ -179,9 +179,9 @@ public class BalanceTileModel
 
         float lightPollutionLower = -70;
         float desolationLower = -10;
-        float lightGrassLower = 5;
-        float denseGrassLower = 20;
-        float tallGrassLower = 40;
+        float lightGrassLower = 4;
+        float denseGrassLower = 18;
+        float tallGrassLower = 35;
         float floweringGrassLower = 60;
 
         if (modifier < lightPollutionLower)
@@ -260,7 +260,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) > CalculateTierAffect(Tier.LightGrass)) // If you are above this tier
             {
-                if (modifier - denseGrassLower + 5 < rand * 5)
+                if (modifier - denseGrassLower + 8 < rand * 8)
                 {
                     return Tier.LightGrass;
                 }
