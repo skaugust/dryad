@@ -10,6 +10,13 @@ public class BalanceManager : MonoBehaviour
     public AutoTiledMask longGrassMask;
     public AutoTiledMask pollutionMask;
 
+    public GameObject factoryParentGroup;
+    [System.NonSerialized]
+    public List<Transform> factoryList = new List<Transform>();
+    public GameObject pollutionSpawnParentGroup;
+    [System.NonSerialized]
+    public List<Transform> pollutionSpawnList = new List<Transform>();
+
     Dictionary<MaskType, AutoTiledMask> maskMap;
     public enum MaskType
     {
@@ -34,6 +41,15 @@ public class BalanceManager : MonoBehaviour
         maskMap.Add(MaskType.LongGrass, longGrassMask);
         maskMap.Add(MaskType.Pollution, pollutionMask);
 
+        foreach (Transform child in factoryParentGroup.transform)
+        {
+            factoryList.Add(child);
+        }
+        foreach (Transform child in pollutionSpawnParentGroup.transform)
+        {
+            pollutionSpawnList.Add(child);
+        }
+
         for (int i = 0; i < NUM_BUCKETS; i++)
         {
             bucketedModelsForUpdates.Add(new List<BalanceTileModel>());
@@ -57,7 +73,7 @@ public class BalanceManager : MonoBehaviour
             for (int j = -100; j <= 100; j++)
             {
                 Vector2Int location = new Vector2Int(i, j);
-                balanceMap[location].init(getAdjacentTiles(location), getCloseTiles(location), getNearByTiles(location));
+                balanceMap[location].init(getAdjacentTiles(location), getCloseTiles(location), getNearByTiles(location), factoryList, pollutionSpawnList);
             }
         }
     }

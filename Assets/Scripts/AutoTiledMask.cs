@@ -21,31 +21,20 @@ public class AutoTiledMask : MonoBehaviour
         // Check for Camera movement, move.
     }
 
+    // https://stackoverflow.com/questions/1082917/mod-of-negative-number-is-melting-my-brain
+    private static int mod(int x, int m)
+    {
+        return (x % m + m) % m;
+    }
+
     public void SetPixel(int x, int y, Color color)
     {
-        int i = 0;
-        while (x < 0)
-        {
-            x += MASK_SIZE;
-            i--;
-        }
-        while (x >= MASK_SIZE)
-        {
-            x -= MASK_SIZE;
-            i++;
-        }
+        int i = Mathf.FloorToInt(x / (float)MASK_SIZE);
+        x = mod(x, MASK_SIZE);
 
-        int j = 0;
-        while (y < 0)
-        {
-            y += MASK_SIZE;
-            j--;
-        }
-        while (y >= MASK_SIZE)
-        {
-            y -= MASK_SIZE;
-            j++;
-        }
+        int j = Mathf.FloorToInt(y / (float)MASK_SIZE);
+        y = mod(y, MASK_SIZE);
+
         Vector2Int location = new Vector2Int(i, j);
         dirty.Add(location);
         if (!maskMap.ContainsKey(location))

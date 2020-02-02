@@ -38,6 +38,10 @@ public class BalanceTileModel
     private List<BalanceTileModel> adjacentTiles;
     private List<BalanceTileModel> closeTiles;
     private List<BalanceTileModel> nearByTiles;
+
+    private List<Transform> rangeFactory;
+    private List<Transform> rangePollution;
+
     private Vector2 drawCenter;
     private Vector2 drawCenter2;
     private Vector2 drawCenter3;
@@ -65,11 +69,13 @@ public class BalanceTileModel
         drawCenter3 = new Vector2(location.x / TILES_PER_GAME_UNIT, location.y / TILES_PER_GAME_UNIT) + offset;
     }
 
-    public void init(List<BalanceTileModel> adjacentTiles, List<BalanceTileModel> closeTiles, List<BalanceTileModel> nearByTiles)
+    public void init(List<BalanceTileModel> adjacentTiles, List<BalanceTileModel> closeTiles, List<BalanceTileModel> nearByTiles, List<Transform> rangeFactory, List<Transform> rangePollution)
     {
         this.adjacentTiles = adjacentTiles;
         this.closeTiles = closeTiles;
         this.nearByTiles = nearByTiles;
+        this.rangeFactory = rangeFactory;
+        this.rangePollution = rangePollution;
 
         balanceManager = GameObject.FindObjectOfType<BalanceManager>();
 
