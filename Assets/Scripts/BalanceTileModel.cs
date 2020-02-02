@@ -319,11 +319,11 @@ public class BalanceTileModel
         }
         else // Should be flowering grass
         {
-           /* if (this.tier == Tier.FloweringGrass || this.tier == Tier.TallGrass)
-            {
-                return Tier.FloweringGrass;         // If already in range, stay what you are
-            }
-            // TODO: CHECK IF TALL GRASS SPAWN WITHIN RANGE! If so, becomes flowering grass */
+            /* if (this.tier == Tier.FloweringGrass || this.tier == Tier.TallGrass)
+             {
+                 return Tier.FloweringGrass;         // If already in range, stay what you are
+             }
+             // TODO: CHECK IF TALL GRASS SPAWN WITHIN RANGE! If so, becomes flowering grass */
             return Tier.FloweringGrass;
         }
     }
@@ -399,6 +399,11 @@ public class BalanceTileModel
                 capture.range2 = 0;
                 capture.range3 = 0;
                 capture.maskType = BalanceManager.MaskType.LongGrass;
+
+                if (newTier == Tier.FloweringGrass)
+                {
+                    leaf = manager.MakeLeaf(location);
+                }
             }
             else
             {
@@ -407,10 +412,18 @@ public class BalanceTileModel
                 capture.range3 = 0;
             }
 
+            if (newTier != Tier.FloweringGrass && this.leaf != null)
+            {
+                GameObject.Destroy(leaf);
+                this.leaf = null;
+            }
+
             this.tier = newTier;
             capture.Apply(true);
         }
     }
+
+    private GameObject leaf = null;
 
     // The capture is purposefully modifiable, to avoid GC hitches.
     private MaskApplyCapture capture;

@@ -13,6 +13,9 @@ public class BalanceManager : MonoBehaviour
     public GameObject treeGroup;
     public TreeTag treePrefab;
 
+    public GameObject leafGroup;
+    public GameObject leafPrefab;
+
     public AutoTiledMask shortGrassMask;
     public AutoTiledMask longGrassMask;
     public AutoTiledMask pollutionMask;
@@ -95,6 +98,16 @@ public class BalanceManager : MonoBehaviour
         {
             pair.Value.UpdateTrees(this.treeList);
         }
+    }
+
+    public GameObject MakeLeaf(Vector2Int location)
+    {
+        GameObject newLeaf = GameObject.Instantiate(leafPrefab);
+        newLeaf.SetActive(true);
+        newLeaf.transform.position = TileToWorldCoords(location);
+        newLeaf.transform.parent = leafGroup.transform;
+        newLeaf.transform.Rotate(Vector3.forward, UnityEngine.Random.Range(-20, 20));
+        return newLeaf;
     }
 
     public void RemoveFactory(FactoryTag factory)
