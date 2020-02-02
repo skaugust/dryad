@@ -14,9 +14,12 @@ public class SimpleDryadMovement : MonoBehaviour
     public AudioSource grassSound;
     public AudioSource pollutionSound;
 
+    public GameObject rotate1;
+    public GameObject rotate2;
+
     void Start()
     {
-
+        GetComponentInChildren<Animator>().Play("Take 001");
     }
 
     public void PlayChannel()
@@ -89,5 +92,24 @@ public class SimpleDryadMovement : MonoBehaviour
         }
         Vector2 movementDelta = movement.normalized * Time.deltaTime * speed;
         this.transform.position += new Vector3(movementDelta.x, movementDelta.y, 0);
+
+        // straight up is 0 rotation
+        // straight down is 180 along the y axis.
+        // SOH CAH TOA
+
+        // tan(theta) = o(y) / a(x)
+        // arctan(y/x) = theta
+
+
+        if (movement != Vector2.zero)
+        {
+            float angle = Mathf.Atan2(movement.x, movement.y) * Mathf.Rad2Deg;
+            rotate1.transform.rotation = Quaternion.identity;
+            rotate1.transform.Rotate(-40, 0, 0);
+            rotate1.transform.Rotate(0, angle, 0);
+            rotate2.transform.rotation = Quaternion.identity;
+            rotate2.transform.Rotate(-40, 0, 0);
+            rotate2.transform.Rotate(0, angle, 0);
+        }
     }
 }
