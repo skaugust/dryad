@@ -50,6 +50,15 @@ TagManager:
   - name: Pollution
     uniqueID: 1766550415
     locked: 0
+  - name: WaterPure
+    uniqueID: 2604368497
+    locked: 0
+  - name: WaterDirty
+    uniqueID: 2783456797
+    locked: 0
+  - name: WaterPolluted
+    uniqueID: 3839892863
+    locked: 0
   - name: Creatures
     uniqueID: 209155987
     locked: 0

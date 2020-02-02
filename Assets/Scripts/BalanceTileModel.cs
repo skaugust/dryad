@@ -40,8 +40,13 @@ public class BalanceTileModel
     private List<BalanceTileModel> closeTiles;
     private List<BalanceTileModel> nearByTiles;
 
-    private List<Transform> rangeFactory;
-    private List<Transform> rangePollution;
+    private const float UNDERNEATH_DISTANCE = 0.4f;
+    private List<Transform> undearneathFactory;
+    private List<Transform> undearneathPollution;
+
+    private const float NEAR_BY_DISTANCE = 2f;
+    private List<Transform> nearByFactory;
+    private List<Transform> nearByPollution;
 
     private Vector2 drawCenter;
     private Vector2 drawCenter2;
@@ -76,8 +81,13 @@ public class BalanceTileModel
         this.closeTiles = closeTiles;
         this.nearByTiles = nearByTiles;
 
-        this.rangeFactory = new List<Transform>(rangeFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < 2f));
-        this.rangePollution = rangePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < 1f).ToList();
+        this.nearByFactory = rangeFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        this.undearneathFactory = this.nearByFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
+        this.nearByFactory.RemoveAll(f => this.undearneathFactory.Contains(f));
+
+        this.nearByPollution = rangePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        this.undearneathPollution = this.nearByPollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
+        this.nearByPollution.RemoveAll(f => this.undearneathPollution.Contains(f));
 
         balanceManager = GameObject.FindObjectOfType<BalanceManager>();
         ADJACENT_TILE_MODIFIER = balanceManager.ADJACENT_TILE_MODIFIER / Convert.ToSingle(adjacentTiles.Count);
@@ -102,13 +112,20 @@ public class BalanceTileModel
             modifier += NEAR_BY_TILE_MODIFIER * CalculateTierAffect(other.tier);
         }
 
-        foreach (Transform other in rangeFactory)
+        foreach (Transform other in nearByPollution)
         {
-            modifier -= 40;
+            modifier -= 10;
         }
-        foreach (Transform other in rangePollution)
+        foreach (Transform other in undearneathPollution)
         {
-            modifier -= 40;
+            modifier -= 100;
+        }
+        foreach (Transform other in nearByFactory)
+        {
+            if (modifier > 0)
+            {
+                modifier = modifier / 2;
+            }
         }
 
         // TODO(sky):
