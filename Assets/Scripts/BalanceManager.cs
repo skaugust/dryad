@@ -17,6 +17,10 @@ public class BalanceManager : MonoBehaviour
     private const int NUM_BUCKETS = 500;
     private List<List<BalanceTileModel>> bucketedModelsForUpdates = new List<List<BalanceTileModel>>();
 
+    public float ADJACENT_TILE_MODIFIER = 10;
+    public float CLOSE_TILE_MODIFIER = 4;
+    public float NEAR_BY_TILE_MODIFIER = 1;
+
     void Start()
     {
         natureMaskTexture = natureMask.sprite.texture;
