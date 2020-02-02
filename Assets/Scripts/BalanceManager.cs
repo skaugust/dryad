@@ -5,11 +5,18 @@ using UnityEngine;
 public class BalanceManager : MonoBehaviour
 {
     public GameObject dryad;
-    public SpriteMask natureMask;
-    public SpriteMask pollutionMask;
 
-    private Texture2D natureMaskTexture;
+    public SpriteMask pollutionMask;
     private Texture2D pollutionMaskTexture;
+
+    public AutoTiledMask shortGrassMask;
+    public AutoTiledMask longGrassMask;
+
+    Dictionary<MaskType, AutoTiledMask> maskMap;
+    public enum MaskType
+    {
+        ShortGrass, LongGrass
+    }
 
     private Dictionary<Vector2Int, BalanceTileModel> balanceMap = new Dictionary<Vector2Int, BalanceTileModel>();
 
@@ -23,10 +30,11 @@ public class BalanceManager : MonoBehaviour
 
     void Start()
     {
-        natureMaskTexture = natureMask.sprite.texture;
-        pollutionMaskTexture = pollutionMask.sprite.texture;
+        maskMap = new Dictionary<MaskType, AutoTiledMask>();
+        maskMap.Add(MaskType.ShortGrass, shortGrassMask);
+        maskMap.Add(MaskType.LongGrass, longGrassMask);
 
-        Fill(natureMaskTexture, Color.clear);
+        pollutionMaskTexture = pollutionMask.sprite.texture;
         Fill(pollutionMaskTexture, Color.white);
 
         for (int i = 0; i < NUM_BUCKETS; i++)
@@ -72,7 +80,10 @@ public class BalanceManager : MonoBehaviour
         nextUpdateBucket %= NUM_BUCKETS;
 
         // These might have changed.
-        natureMaskTexture.Apply();
+        foreach (AutoTiledMask mask in maskMap.Values)
+        {
+            mask.Apply();
+        }
         pollutionMaskTexture.Apply();
     }
 
@@ -168,8 +179,9 @@ public class BalanceManager : MonoBehaviour
     }
 
     // |center| should be in game coordinates.
-    public void ColorTextureMasks(Vector2 center, int radius)
+    public void ColorTextureMasks(Vector2 center, int radius, MaskType maskType)
     {
+        AutoTiledMask mask = maskMap[maskType];
         for (int i = -radius; i <= radius; i++)
         {
             for (int j = -radius; j <= radius; j++)
@@ -178,7 +190,7 @@ public class BalanceManager : MonoBehaviour
                 {
                     int x = i + (int)((center.x + 5) * 100);
                     int y = j + (int)((center.y + 5) * 100);
-                    natureMaskTexture.SetPixel(x, y, Color.white);
+                    mask.SetPixel(x, y, Color.white);
                     pollutionMaskTexture.SetPixel(x, y, Color.clear);
                 }
             }
