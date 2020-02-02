@@ -876,8 +876,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dryad: {fileID: 170425436}
-  natureMask: {fileID: 195404940}
   pollutionMask: {fileID: 2035532060}
+  shortGrassMask: {fileID: 195404940}
+  longGrassMask: {fileID: 922481874}
+  ADJACENT_TILE_MODIFIER: 10
+  CLOSE_TILE_MODIFIER: 4
+  NEAR_BY_TILE_MODIFIER: 1
 --- !u!4 &990603106
 Transform:
   m_ObjectHideFlags: 0
