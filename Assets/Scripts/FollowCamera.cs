@@ -9,6 +9,6 @@ public class FollowCamera : MonoBehaviour
     void LateUpdate()
     {
         Vector2 delta = dryad.transform.position - this.transform.position;
-        this.transform.position += Vector3.Lerp(Vector2.zero, delta, Time.deltaTime);
+        this.transform.position += Vector3.Lerp(Vector2.zero, delta, Time.deltaTime*5);
     }
 }

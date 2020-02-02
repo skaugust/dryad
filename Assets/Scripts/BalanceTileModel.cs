@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class BalanceTileModel
 {
@@ -10,7 +11,7 @@ public class BalanceTileModel
         DensePollution, LightPollution, Desolation, LightGrass, DenseGrass, TallGrass, FloweringGrass
     }
 
-    private static int CalculateTierAffect(Tier tier)
+    public static int CalculateTierAffect(Tier tier)
     {
         switch (tier)
         {
@@ -39,15 +40,24 @@ public class BalanceTileModel
     private List<BalanceTileModel> closeTiles;
     private List<BalanceTileModel> nearByTiles;
 
-    private List<Transform> rangeFactory;
-    private List<Transform> rangePollution;
+    private const float UNDERNEATH_DISTANCE = 0.4f;
+    private List<Transform> undearneathFactory;
+    private List<Transform> undearneathPollution;
+
+    private const float CLOSE_DISTANCE = 2f;
+    private List<Transform> closeFactory;
+    private List<Transform> closePollution;
+
+    private const float NEAR_BY_DISTANCE = 4f;
+    private List<Transform> nearByFactory;
+    private List<Transform> nearByPollution;
 
     private Vector2 drawCenter;
     private Vector2 drawCenter2;
     private Vector2 drawCenter3;
-    private Tier tier;
+    public Tier tier;
 
-    public const float TILES_PER_GAME_UNIT = 5;
+    public const float TILES_PER_GAME_UNIT = 1.25f;
     private const float TEXTURE_1000_UNIT_LENGTH = 50 / TILES_PER_GAME_UNIT;
     private readonly float TEXTURE_1000_HYPOTENUS = Mathf.Sqrt((TEXTURE_1000_UNIT_LENGTH * TEXTURE_1000_UNIT_LENGTH) + (TEXTURE_1000_UNIT_LENGTH * TEXTURE_1000_UNIT_LENGTH));
 
@@ -69,16 +79,21 @@ public class BalanceTileModel
         drawCenter3 = new Vector2(location.x / TILES_PER_GAME_UNIT, location.y / TILES_PER_GAME_UNIT) + offset;
     }
 
-    public void init(List<BalanceTileModel> adjacentTiles, List<BalanceTileModel> closeTiles, List<BalanceTileModel> nearByTiles, List<Transform> rangeFactory, List<Transform> rangePollution)
+    public void init(BalanceManager manager, List<BalanceTileModel> adjacentTiles, List<BalanceTileModel> closeTiles, List<BalanceTileModel> nearByTiles, List<Transform> rangeFactory, List<Transform> rangePollution)
     {
         this.adjacentTiles = adjacentTiles;
         this.closeTiles = closeTiles;
         this.nearByTiles = nearByTiles;
-        this.rangeFactory = rangeFactory;
-        this.rangePollution = rangePollution;
+
+        this.nearByFactory = rangeFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        this.closeFactory = nearByFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
+        this.undearneathFactory = this.closeFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
+
+        this.nearByPollution = rangePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        this.closePollution = nearByPollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
+        this.undearneathPollution = this.closePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
 
         balanceManager = GameObject.FindObjectOfType<BalanceManager>();
-
         ADJACENT_TILE_MODIFIER = balanceManager.ADJACENT_TILE_MODIFIER / Convert.ToSingle(adjacentTiles.Count);
         CLOSE_TILE_MODIFIER = balanceManager.CLOSE_TILE_MODIFIER / Convert.ToSingle(closeTiles.Count);
         NEAR_BY_TILE_MODIFIER = balanceManager.NEAR_BY_TILE_MODIFIER / Convert.ToSingle(nearByTiles.Count);
@@ -99,6 +114,39 @@ public class BalanceTileModel
         foreach (BalanceTileModel other in nearByTiles)
         {
             modifier += NEAR_BY_TILE_MODIFIER * CalculateTierAffect(other.tier);
+        }
+
+        foreach (Transform other in nearByPollution)
+        {
+            modifier -= 10;
+        }
+
+        foreach (Transform other in undearneathPollution)
+        {
+            modifier -= 12;
+        }
+        foreach (Transform other in nearByPollution)
+        {
+            modifier -= 8;
+        }
+        foreach (Transform other in closePollution)
+        {
+            modifier -= 3;
+        }
+
+        foreach (Transform other in nearByFactory)
+        {
+            if (modifier > 0)
+            {
+                modifier = modifier / 2;
+            }
+        }
+        foreach (Transform other in closeFactory)
+        {
+            if (modifier > 0)
+            {
+                modifier = modifier / 2;
+            }
         }
 
         // TODO(sky):
