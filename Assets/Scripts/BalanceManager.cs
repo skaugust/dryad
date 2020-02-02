@@ -93,6 +93,14 @@ public class BalanceManager : MonoBehaviour
         }
     }
 
+    public void RemoveFactory(FactoryTag factory)
+    {
+        factoryList.Remove(factory);
+        foreach (KeyValuePair<Vector2Int, BalanceTileModel> pair in balanceMap)
+        {
+            pair.Value.UpdateFactories(this.factoryList);
+        }
+    }
     void FixedUpdate()
     {
         foreach (BalanceTileModel model in getTilesNearby(dryad.transform.position))

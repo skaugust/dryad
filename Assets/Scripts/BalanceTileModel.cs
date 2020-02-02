@@ -87,9 +87,12 @@ public class BalanceTileModel
         this.closeTiles = closeTiles;
         this.nearByTiles = nearByTiles;
 
-        this.nearByFactory = rangeFactory.Select(t => t.transform).Where(f => Vector2.Distance(f.transform.position, balanceManager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
-        this.closeFactory = nearByFactory.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
-        this.undearneathFactory = this.closeFactory.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
+        UpdateFactories(rangeFactory);
+        // Purposefully only register underneath on startup. Because we only remove factories, we skip this to avoid re-registering.
+        foreach (Transform factoryTransform in this.undearneathFactory)
+        {
+            factoryTransform.gameObject.GetComponent<FactoryTag>().RegisterUnderneathTile(this);
+        }
 
         this.nearByPollution = rangePollution.Select(t => t.transform).Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
         this.closePollution = nearByPollution.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
@@ -105,6 +108,13 @@ public class BalanceTileModel
     public void UpdateTrees(List<TreeTag> rangeTree)
     {
         this.nearByTree = rangeTree.Select(t => t.transform).Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+    }
+
+    public void UpdateFactories(List<FactoryTag> rangeFactory)
+    {
+        this.nearByFactory = rangeFactory.Select(t => t.transform).Where(f => Vector2.Distance(f.transform.position, balanceManager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        this.closeFactory = nearByFactory.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
+        this.undearneathFactory = this.closeFactory.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
     }
 
     private float CalcualteModifier(float extraModifier)
