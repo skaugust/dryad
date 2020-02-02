@@ -161,7 +161,7 @@ public class BalanceManager : MonoBehaviour
     public List<BalanceTileModel> getCloseTiles(Vector2Int location)
     {
         List<BalanceTileModel> result = new List<BalanceTileModel>();
-        for (int i = -3; i <= -3; i++)
+        for (int i = -3; i <= 3; i++)
         {
             for (int j = -3; j <= 3; j++)
             {
@@ -181,7 +181,7 @@ public class BalanceManager : MonoBehaviour
     public List<BalanceTileModel> getNearByTiles(Vector2Int location)
     {
         List<BalanceTileModel> result = new List<BalanceTileModel>();
-        for (int i = -5; i <= -5; i++)
+        for (int i = -5; i <= 5; i++)
         {
             for (int j = -5; j <= 5; j++)
             {

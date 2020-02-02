@@ -17,7 +17,7 @@ public class FactoryTag : MonoBehaviour
         foreach (BalanceTileModel tile in tileList)
         {
             count++;
-            sum += BalanceTileModel.CalculateTierAffect(tileList[0].tier);
+            sum += BalanceTileModel.CalculateTierAffect(tile.tier);
         }
 
         if (sum / (float)count > 1.7f)
