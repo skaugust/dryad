@@ -76,8 +76,6 @@ public class BalanceTileModel
         this.closeTiles = closeTiles;
         this.nearByTiles = nearByTiles;
 
-
-
         this.rangeFactory = new List<Transform>(rangeFactory.Where(f =>
         {
             float dist = Vector2.Distance(f.position, manager.TileToWorldCoords(this.location));

@@ -10,7 +10,7 @@ public class AutoTiledMask : MonoBehaviour
 
     public Color initColor;
 
-    private const int MASK_SIZE = 260;
+    private const int MASK_SIZE = 250;
 
     void Start()
     {
