@@ -16,9 +16,9 @@ public class BalanceTileModel
         switch (tier)
         {
             case Tier.DensePollution:
-                return -8;
+                return -8 + (int)Mathf.Floor(Time.time / 180);
             case Tier.LightPollution:
-                return -4;
+                return -4 + (int)Mathf.Floor(Time.time / 180);
             case Tier.Desolation:
                 return 0;
             case Tier.LightGrass:
@@ -164,7 +164,7 @@ public class BalanceTileModel
 
         if (nearByTree.Any())
         {
-            modifier += 3;
+            modifier += 5;
         }
 
         // TODO(sky):
