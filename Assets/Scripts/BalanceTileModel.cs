@@ -151,14 +151,14 @@ public class BalanceTileModel
         {
             if (modifier > 0)
             {
-                modifier = modifier / 1.8f;
+                modifier = modifier / 1.3f;
             }
         }
         if (closeFactory.Any())
         {
             if (modifier > 0)
             {
-                modifier = modifier / 1.5f;
+                modifier = modifier / 1.6f;
             }
         }
 
