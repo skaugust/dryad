@@ -10,6 +10,8 @@ public class AutoTiledMask : MonoBehaviour
 
     public Color initColor;
 
+    private const int MASK_SIZE = 250;
+
     void Start()
     {
     }
@@ -24,24 +26,24 @@ public class AutoTiledMask : MonoBehaviour
         int i = 0;
         while (x < 0)
         {
-            x += 1000;
+            x += MASK_SIZE;
             i--;
         }
-        while (x >= 1000)
+        while (x >= MASK_SIZE)
         {
-            x -= 1000;
+            x -= MASK_SIZE;
             i++;
         }
 
         int j = 0;
         while (y < 0)
         {
-            y += 1000;
+            y += MASK_SIZE;
             j--;
         }
-        while (y >= 1000)
+        while (y >= MASK_SIZE)
         {
-            y -= 1000;
+            y -= MASK_SIZE;
             j++;
         }
         Vector2Int location = new Vector2Int(i, j);
@@ -69,10 +71,10 @@ public class AutoTiledMask : MonoBehaviour
         maskCopy.gameObject.SetActive(true);
 
         Texture2D theirTexture = maskPrefab.sprite.texture;
-        Texture2D ourTexture = new Texture2D(theirTexture.width, theirTexture.height, theirTexture.format, false);
+        Texture2D ourTexture = new Texture2D(MASK_SIZE, MASK_SIZE, theirTexture.format, false);
         maskMap[location] = ourTexture;
-        maskCopy.GetComponent<SpriteMask>().sprite = Sprite.Create(ourTexture, new Rect(new Vector2(0, 0), new Vector2(ourTexture.width, ourTexture.height)), new Vector2(.5f, .5f));
-        maskCopy.transform.position += new Vector3(location.x * 10, location.y * 10);
+        maskCopy.GetComponent<SpriteMask>().sprite = Sprite.Create(ourTexture, new Rect(new Vector2(0, 0), new Vector2(MASK_SIZE, MASK_SIZE)), new Vector2(.5f, .5f));
+        maskCopy.transform.position += new Vector3(location.x * 2.5f, location.y * 2.5f);
 
         Fill(ourTexture);
     }
@@ -86,6 +88,5 @@ public class AutoTiledMask : MonoBehaviour
         }
         texture.SetPixels32(clearColorArray);
         texture.Apply();
-
     }
 }

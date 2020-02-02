@@ -183,16 +183,18 @@ public class BalanceManager : MonoBehaviour
     public void ColorTextureMasks(Vector2 center, int radius, MaskType maskType)
     {
         AutoTiledMask mask = maskMap[maskType];
+        int relativeX = (int)((center.x + 1.25f) * 100);
+        int relativeY = (int)((center.y + 1.25f) * 100);
         for (int i = -radius; i <= radius; i++)
         {
             for (int j = -radius; j <= radius; j++)
             {
                 if (Mathf.Sqrt(i * i + j * j) <= radius)
                 {
-                    int x = i + (int)((center.x + 5) * 100);
-                    int y = j + (int)((center.y + 5) * 100);
+                    int x = i + relativeX;
+                    int y = j + relativeY;
                     mask.SetPixel(x, y, Color.white);
-                    pollutionMaskTexture.SetPixel(x, y, Color.clear);
+                    // pollutionMaskTexture.SetPixel(x, y, Color.clear);
                 }
             }
         }
