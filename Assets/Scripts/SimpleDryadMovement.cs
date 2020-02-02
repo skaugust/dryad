@@ -24,7 +24,6 @@ public class SimpleDryadMovement : MonoBehaviour
     public void AdjustDesolaceSound(float amplitude)
     {
         desolaceSound.volume = amplitude;
-        print(amplitude);
     }
 
     void Update()
