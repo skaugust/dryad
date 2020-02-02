@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -44,15 +45,17 @@ public class BalanceTileModel
     private const float TEXTURE_1000_UNIT_LENGTH = 50 / TILES_PER_GAME_UNIT;
     private readonly float TEXTURE_1000_HYPOTENUS = Mathf.Sqrt((TEXTURE_1000_UNIT_LENGTH * TEXTURE_1000_UNIT_LENGTH) + (TEXTURE_1000_UNIT_LENGTH * TEXTURE_1000_UNIT_LENGTH));
 
-    private const int ADJACENT_TILE_MODIFIER = 10;
-    private const int CLOSE_TILE_MODIFIER = 4;
-    private const int NEAR_BY_TILE_MODIFIER = 1;
+    private float ADJACENT_TILE_MODIFIER;
+    private float CLOSE_TILE_MODIFIER;
+    private float NEAR_BY_TILE_MODIFIER;
+
+    private BalanceManager balanceManager;
 
     public BalanceTileModel(Vector2Int location)
     {
         this.tier = Tier.Desolation;
         this.location = location;
-        Vector2 offset = Random.insideUnitCircle * 0.07f;
+        Vector2 offset = UnityEngine.Random.insideUnitCircle * 0.07f;
         drawCenter = new Vector2(location.x / TILES_PER_GAME_UNIT, location.y / TILES_PER_GAME_UNIT) + offset;
     }
 
@@ -62,11 +65,19 @@ public class BalanceTileModel
         this.adjacentTiles = adjacentTiles;
         this.closeTiles = closeTiles;
         this.nearByTiles = nearByTiles;
+
+        balanceManager = GameObject.FindObjectOfType<BalanceManager>();
+
+        ADJACENT_TILE_MODIFIER = balanceManager.ADJACENT_TILE_MODIFIER / Convert.ToSingle(adjacentTiles.Count);
+        CLOSE_TILE_MODIFIER = balanceManager.CLOSE_TILE_MODIFIER / Convert.ToSingle(closeTiles.Count);
+        NEAR_BY_TILE_MODIFIER = balanceManager.NEAR_BY_TILE_MODIFIER / Convert.ToSingle(nearByTiles.Count);
+
+
     }
 
-    private int CalcualteModifier(int extraModifier)
+    private float CalcualteModifier(float extraModifier)
     {
-        int modifier = extraModifier;
+        float modifier = extraModifier;
 
         foreach (BalanceTileModel other in adjacentTiles)
         {
@@ -90,7 +101,7 @@ public class BalanceTileModel
         return modifier;
     }
 
-    private Tier CalculateTierFromModifier(int modifier)
+    private Tier CalculateTierFromModifier(float modifier)
     {
         /*
         So reasonable bounds are -143 to + 123
@@ -133,24 +144,24 @@ public class BalanceTileModel
     }
 
     // extraModifier comes from Dryad's closeness, etc. TODO(sky): Pass in world power.
-    public void Update(BalanceManager manager, int extraModifier)
+    public void Update(BalanceManager manager, float extraModifier)
     {
-        int modifier = CalcualteModifier(extraModifier);
+        float modifier = CalcualteModifier(extraModifier);
         Tier newTier = CalculateTierFromModifier(modifier);
 
         if (newTier != this.tier)
         {
             if (newTier == Tier.LightGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * Random.Range(.2f, .4f)), BalanceManager.MaskType.ShortGrass);
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.4f, .4f)), BalanceManager.MaskType.ShortGrass);
             }
             else if (newTier == Tier.TallGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * Random.Range(.5f, .8f)), BalanceManager.MaskType.ShortGrass);
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.4f, .4f)), BalanceManager.MaskType.ShortGrass);
             }
             else if (newTier == Tier.DenseGrass || newTier == Tier.FloweringGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS), BalanceManager.MaskType.LongGrass);
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.8f, .8f)), BalanceManager.MaskType.LongGrass);
             }
             this.tier = newTier;
         }
