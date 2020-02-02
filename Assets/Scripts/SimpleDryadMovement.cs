@@ -16,7 +16,7 @@ public class SimpleDryadMovement : MonoBehaviour
     void Update()
     {
         // TODO: change speed based on tile underneath
-        List<BalanceTileModel> tiles = balance.getTilesNearby(balance.dryad.transform.position);
+        List<BalanceTileModel> tiles = balance.getTilesNearby(balance.dryad.transform.position, 0);
         float standingOn = 0;
         foreach (BalanceTileModel a in tiles)
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,9 @@ public class BalanceManager : MonoBehaviour
 {
     public GameObject dryad;
 
+    public GameObject treeGroup;
+    public TreeTag treePrefab;
+
     public AutoTiledMask shortGrassMask;
     public AutoTiledMask longGrassMask;
     public AutoTiledMask pollutionMask;
@@ -14,6 +18,9 @@ public class BalanceManager : MonoBehaviour
     public List<FactoryTag> factoryList = new List<FactoryTag>();
     public List<PollutionTag> pollutionList = new List<PollutionTag>();
     public List<TreeTag> treeList = new List<TreeTag>();
+    // TODO(sky): Replace with PureWaterTag after we implement this.
+    public List<MonoBehaviour> pureWaterList = new List<MonoBehaviour>();
+    public int globalPower = 1;
 
     Dictionary<MaskType, AutoTiledMask> maskMap;
     public enum MaskType
@@ -27,10 +34,11 @@ public class BalanceManager : MonoBehaviour
     private const int NUM_BUCKETS = 500;
     private List<List<BalanceTileModel>> bucketedModelsForUpdates = new List<List<BalanceTileModel>>();
 
-    public float ADJACENT_TILE_MODIFIER = 10;
-    public float CLOSE_TILE_MODIFIER = 4;
-    public float NEAR_BY_TILE_MODIFIER = 1;
-    public float DRYAD_STANDING_MODIFIER = 5;
+    public int ADJACENT_TILE_MODIFIER = 10;
+    public int CLOSE_TILE_MODIFIER = 4;
+    public int NEAR_BY_TILE_MODIFIER = 1;
+    public int DRYAD_STANDING_MODIFIER = 5;
+    public int dryadChannellingModifier = 2;
 
     private const int TILES_TO_INIT = 35;
 
@@ -55,7 +63,7 @@ public class BalanceManager : MonoBehaviour
             for (int j = -TILES_TO_INIT; j <= TILES_TO_INIT; j++)
             {
                 Vector2Int location = new Vector2Int(i, j);
-                BalanceTileModel model = new BalanceTileModel(location);
+                BalanceTileModel model = new BalanceTileModel(location, this);
                 balanceMap[location] = model;
                 int index = UnityEngine.Random.Range(0, NUM_BUCKETS);
                 bucketedModelsForUpdates[index].Add(model);
@@ -64,20 +72,61 @@ public class BalanceManager : MonoBehaviour
 
         foreach (KeyValuePair<Vector2Int, BalanceTileModel> pair in balanceMap)
         {
-            pair.Value.init(this, getAdjacentTiles(pair.Key), getCloseTiles(pair.Key), getNearByTiles(pair.Key), this.factoryList, this.pollutionList, this.treeList);
+            pair.Value.init(getAdjacentTiles(pair.Key), getCloseTiles(pair.Key), getNearByTiles(pair.Key), this.factoryList, this.pollutionList, this.treeList);
         }
     }
 
+    private void UpdateGlobalPower()
+    {
+        // World power = 1 + floor(0.1 * # of trees + .05 * # of pure water tiles)
+        this.globalPower = 1 + UnityEngine.Mathf.FloorToInt(0.1f * treeList.Count + 0.05f * pureWaterList.Count);
+    }
+
+    public void MakeTree(Vector2Int location)
+    {
+        TreeTag newTree = GameObject.Instantiate(treePrefab);
+        newTree.transform.position = TileToWorldCoords(location);
+        newTree.transform.parent = treeGroup.transform;
+
+        treeList.Add(newTree);
+        foreach (KeyValuePair<Vector2Int, BalanceTileModel> pair in balanceMap)
+        {
+            pair.Value.UpdateTrees(this.treeList);
+        }
+    }
+
+    public void RemoveFactory(FactoryTag factory)
+    {
+        factoryList.Remove(factory);
+        foreach (KeyValuePair<Vector2Int, BalanceTileModel> pair in balanceMap)
+        {
+            pair.Value.UpdateFactories(this.factoryList);
+        }
+    }
     void FixedUpdate()
     {
-        foreach (BalanceTileModel model in getTilesNearby(dryad.transform.position))
+        List<BalanceTileModel> underneathTiles = getTilesNearby(dryad.transform.position, 0);
+        bool isChannelling = Input.GetKey(KeyCode.Space);
+        if (isChannelling)
         {
-            model.Update(this, DRYAD_STANDING_MODIFIER);
+            int channelingMod = globalPower * (dryadChannellingModifier + 1);
+            HashSet<BalanceTileModel> underneathTilesSet = new HashSet<BalanceTileModel>(underneathTiles);
+            foreach (BalanceTileModel model in getTilesNearby(dryad.transform.position, 4).Where(t => !underneathTilesSet.Contains(t)))
+            {
+                model.Update(this, channelingMod);
+            }
         }
 
+        int standingMod = globalPower * (DRYAD_STANDING_MODIFIER + 1 + (isChannelling ? dryadChannellingModifier : 0));
+        foreach (BalanceTileModel model in underneathTiles)
+        {
+            model.Update(this, standingMod);
+        }
+
+        // This could re-update channelled/stood upon tiles. Unclear if we care.
         foreach (BalanceTileModel model in bucketedModelsForUpdates[nextUpdateBucket])
         {
-            model.Update(this, 0);
+            model.Update(this, globalPower);
         }
         nextUpdateBucket++;
         nextUpdateBucket %= NUM_BUCKETS;
@@ -149,10 +198,10 @@ public class BalanceManager : MonoBehaviour
         return result;
     }
 
-    public List<BalanceTileModel> getTilesNearby(Vector2 gameCoordinates)
+    public List<BalanceTileModel> getTilesNearby(Vector2 gameCoordinates, int extend)
     {
-        Vector2Int upper = new Vector2Int(Mathf.CeilToInt(gameCoordinates.x * BalanceTileModel.TILES_PER_GAME_UNIT), Mathf.CeilToInt(gameCoordinates.y * BalanceTileModel.TILES_PER_GAME_UNIT));
-        Vector2Int lower = new Vector2Int(Mathf.FloorToInt(gameCoordinates.x * BalanceTileModel.TILES_PER_GAME_UNIT), Mathf.FloorToInt(gameCoordinates.y * BalanceTileModel.TILES_PER_GAME_UNIT));
+        Vector2Int upper = new Vector2Int(Mathf.CeilToInt(gameCoordinates.x * BalanceTileModel.TILES_PER_GAME_UNIT) + extend, Mathf.CeilToInt(gameCoordinates.y * BalanceTileModel.TILES_PER_GAME_UNIT) + extend);
+        Vector2Int lower = new Vector2Int(Mathf.FloorToInt(gameCoordinates.x * BalanceTileModel.TILES_PER_GAME_UNIT) - extend, Mathf.FloorToInt(gameCoordinates.y * BalanceTileModel.TILES_PER_GAME_UNIT) - extend);
         List<BalanceTileModel> list = new List<BalanceTileModel>();
         for (int i = lower.x; i <= upper.x; i++)
         {

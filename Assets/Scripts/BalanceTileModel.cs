@@ -68,10 +68,11 @@ public class BalanceTileModel
 
     private BalanceManager balanceManager;
 
-    public BalanceTileModel(Vector2Int location)
+    public BalanceTileModel(Vector2Int location, BalanceManager manager)
     {
         this.tier = Tier.Desolation;
         this.location = location;
+        this.balanceManager = manager;
         Vector2 offset = UnityEngine.Random.insideUnitCircle * 0.07f;
         drawCenter = new Vector2(location.x / TILES_PER_GAME_UNIT, location.y / TILES_PER_GAME_UNIT) + offset;
         offset = UnityEngine.Random.insideUnitCircle * 0.5f;
@@ -80,26 +81,40 @@ public class BalanceTileModel
         drawCenter3 = new Vector2(location.x / TILES_PER_GAME_UNIT, location.y / TILES_PER_GAME_UNIT) + offset;
     }
 
-    public void init(BalanceManager manager, List<BalanceTileModel> adjacentTiles, List<BalanceTileModel> closeTiles, List<BalanceTileModel> nearByTiles, List<FactoryTag> rangeFactory, List<PollutionTag> rangePollution, List<TreeTag> rangeTree)
+    public void init(List<BalanceTileModel> adjacentTiles, List<BalanceTileModel> closeTiles, List<BalanceTileModel> nearByTiles, List<FactoryTag> rangeFactory, List<PollutionTag> rangePollution, List<TreeTag> rangeTree)
     {
         this.adjacentTiles = adjacentTiles;
         this.closeTiles = closeTiles;
         this.nearByTiles = nearByTiles;
 
-        this.nearByFactory = rangeFactory.Select(t => t.transform).Where(f => Vector2.Distance(f.transform.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
-        this.closeFactory = nearByFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
-        this.undearneathFactory = this.closeFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
+        UpdateFactories(rangeFactory);
+        // Purposefully only register underneath on startup. Because we only remove factories, we skip this to avoid re-registering.
+        foreach (Transform factoryTransform in this.undearneathFactory)
+        {
+            factoryTransform.gameObject.GetComponent<FactoryTag>().RegisterUnderneathTile(this);
+        }
 
-        this.nearByPollution = rangePollution.Select(t => t.transform).Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
-        this.closePollution = nearByPollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
-        this.undearneathPollution = this.closePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
+        this.nearByPollution = rangePollution.Select(t => t.transform).Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        this.closePollution = nearByPollution.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
+        this.undearneathPollution = this.closePollution.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
 
-        this.nearByTree = rangeTree.Select(t => t.transform).Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        UpdateTrees(rangeTree);
 
-        balanceManager = GameObject.FindObjectOfType<BalanceManager>();
         ADJACENT_TILE_MODIFIER = balanceManager.ADJACENT_TILE_MODIFIER / Convert.ToSingle(adjacentTiles.Count);
         CLOSE_TILE_MODIFIER = balanceManager.CLOSE_TILE_MODIFIER / Convert.ToSingle(closeTiles.Count);
         NEAR_BY_TILE_MODIFIER = balanceManager.NEAR_BY_TILE_MODIFIER / Convert.ToSingle(nearByTiles.Count);
+    }
+
+    public void UpdateTrees(List<TreeTag> rangeTree)
+    {
+        this.nearByTree = rangeTree.Select(t => t.transform).Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+    }
+
+    public void UpdateFactories(List<FactoryTag> rangeFactory)
+    {
+        this.nearByFactory = rangeFactory.Select(t => t.transform).Where(f => Vector2.Distance(f.transform.position, balanceManager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        this.closeFactory = nearByFactory.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
+        this.undearneathFactory = this.closeFactory.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
     }
 
     private float CalcualteModifier(float extraModifier)
@@ -323,6 +338,11 @@ public class BalanceTileModel
             capture = new MaskApplyCapture();
             capture.model = this;
             capture.manager = manager;
+        }
+
+        if (newTier == Tier.FloweringGrass && !nearByTree.Any())
+        {
+            balanceManager.MakeTree(this.location);
         }
 
         if (newTier != this.tier)

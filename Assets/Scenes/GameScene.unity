@@ -16582,8 +16582,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14870eff4b3254843be1179b2832bc70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1001 &1976940078
-PrefabInstance:
+  dryad: {fileID: 170425436}
+  treeGroup: {fileID: 664402050}
+  treePrefab: {fileID: 900389347}
+  shortGrassMask: {fileID: 195404940}
+  longGrassMask: {fileID: 922481874}
+  pollutionMask: {fileID: 1144647168}
+  factoryList: []
+  pollutionList: []
+  treeList: []
+  ADJACENT_TILE_MODIFIER: 10
+  CLOSE_TILE_MODIFIER: 4
+  NEAR_BY_TILE_MODIFIER: 1
+  DRYAD_STANDING_MODIFIER: 6
+--- !u!4 &990603106
+Transform:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
