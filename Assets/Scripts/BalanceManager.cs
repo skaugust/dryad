@@ -128,7 +128,7 @@ public class BalanceManager : MonoBehaviour
         List<BalanceTileModel> result = new List<BalanceTileModel>();
         for (int i = -3; i <= -3; i++)
         {
-            for (int j = -3; j <= -3; j++)
+            for (int j = -3; j <= 3; j++)
             {
                 if (Mathf.Abs(i) >= 1 || Mathf.Abs(j) >= 1)
                 {
@@ -148,7 +148,7 @@ public class BalanceManager : MonoBehaviour
         List<BalanceTileModel> result = new List<BalanceTileModel>();
         for (int i = -5; i <= -5; i++)
         {
-            for (int j = -5; j <= -5; j++)
+            for (int j = -5; j <= 5; j++)
             {
                 if (Mathf.Abs(i) >= 3 || Mathf.Abs(j) >= 3)
                 {

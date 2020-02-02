@@ -714,7 +714,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 200.48, y: 200.48}
+  m_Size: {x: 209.48, y: 290.48}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1617,8 +1617,8 @@ SpriteMask:
   m_BackSortingLayerID: -106848337
   m_FrontSortingLayer: 2
   m_BackSortingLayer: 1
-  m_FrontSortingOrder: 0
-  m_BackSortingOrder: 0
+  m_FrontSortingOrder: 1
+  m_BackSortingOrder: 1
   m_IsCustomRangeActive: 1
   m_SpriteSortPoint: 0
 --- !u!1001 &1353515223
@@ -2044,8 +2044,8 @@ SpriteMask:
   m_BackSortingLayerID: 0
   m_FrontSortingLayer: 1
   m_BackSortingLayer: 0
-  m_FrontSortingOrder: 0
-  m_BackSortingOrder: 0
+  m_FrontSortingOrder: 1
+  m_BackSortingOrder: 1
   m_IsCustomRangeActive: 1
   m_SpriteSortPoint: 0
 --- !u!4 &1710211825
@@ -2936,8 +2936,8 @@ SpriteMask:
   m_BackSortingLayerID: 725195471
   m_FrontSortingLayer: 3
   m_BackSortingLayer: 2
-  m_FrontSortingOrder: 0
-  m_BackSortingOrder: 0
+  m_FrontSortingOrder: 1
+  m_BackSortingOrder: 1
   m_IsCustomRangeActive: 1
   m_SpriteSortPoint: 0
 --- !u!4 &2035532061
