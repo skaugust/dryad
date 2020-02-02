@@ -53,10 +53,6 @@ public class AutoTiledMask : MonoBehaviour
         int j = Mathf.FloorToInt(y / (float)MASK_SIZE);
         y = mod(y, MASK_SIZE);
 
-        // Seems to write on the edges of the texture and wrap around. This apparently doesn't result in any awkward lines.
-        x = Mathf.Clamp(x, 1, MASK_SIZE - 2);
-        y = Mathf.Clamp(y, 1, MASK_SIZE - 2);
-
         int location = key(i, j);
         dirty[location] = true;
         if (maskMap[location] == null)
@@ -86,6 +82,7 @@ public class AutoTiledMask : MonoBehaviour
 
         Texture2D theirTexture = maskPrefab.sprite.texture;
         Texture2D ourTexture = new Texture2D(MASK_SIZE, MASK_SIZE, theirTexture.format, false);
+        ourTexture.wrapMode = TextureWrapMode.Clamp;
         maskMap[key(x, y)] = ourTexture;
         maskCopy.GetComponent<SpriteMask>().sprite = Sprite.Create(ourTexture, new Rect(new Vector2(0, 0), new Vector2(MASK_SIZE, MASK_SIZE)), new Vector2(.5f, .5f));
         maskCopy.transform.position += new Vector3(x * 2.5f, y * 2.5f);

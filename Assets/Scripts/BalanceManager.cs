@@ -7,6 +7,8 @@ using UnityEngine;
 public class BalanceManager : MonoBehaviour
 {
     public GameObject dryad;
+    public float mana = 10;
+    private float lastChannelTick = 0;
 
     public GameObject treeGroup;
     public TreeTag treePrefab;
@@ -121,9 +123,11 @@ public class BalanceManager : MonoBehaviour
         }
 
         List<BalanceTileModel> underneathTiles = getTilesNearby(dryad.transform.position, 0);
-        bool isChannelling = Input.GetKey(KeyCode.Space);
+        bool isChannelling = (Input.GetKey(KeyCode.Space) && Time.time > lastChannelTick + .25 && mana > 1);
         if (isChannelling)
         {
+            lastChannelTick = Time.time;
+            mana = mana - 1;
             int channelingMod = globalPower * (dryadChannellingModifier + 1);
             HashSet<BalanceTileModel> underneathTilesSet = new HashSet<BalanceTileModel>(underneathTiles);
             foreach (BalanceTileModel model in getTilesNearby(dryad.transform.position, 4).Where(t => !underneathTilesSet.Contains(t)))
@@ -150,6 +154,11 @@ public class BalanceManager : MonoBehaviour
         foreach (AutoTiledMask mask in maskMap.Values)
         {
             mask.Apply();
+        }
+
+        if (mana < 10f)
+        {
+            mana = mana + 0.01f;
         }
     }
 

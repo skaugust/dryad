@@ -15,6 +15,7 @@ public class SimpleDryadMovement : MonoBehaviour
 
     void Update()
     {
+
         // TODO: change speed based on tile underneath
         List<BalanceTileModel> tiles = balance.getTilesNearby(balance.dryad.transform.position, 0);
         float standingOn = 0;
@@ -31,6 +32,11 @@ public class SimpleDryadMovement : MonoBehaviour
         else
         {
             speed = 5f;
+        }
+
+        if (Input.GetKey(KeyCode.Space) && balance.mana > 1)
+        {
+            speed = speed - 4f;
         }
 
         Vector2 movement = Vector2.zero;
