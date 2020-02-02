@@ -103,8 +103,23 @@ public class BalanceManager : MonoBehaviour
             pair.Value.UpdateFactories(this.factoryList);
         }
     }
-    void FixedUpdate()
+
+    private const float TIME_STEP = 0.02f;
+    private float carryOverTime = 0f;
+
+    void Update()
     {
+        // Using this instead of FixedUpdate, but trying to mirror the behavior.
+        carryOverTime += Time.deltaTime;
+        if (carryOverTime > TIME_STEP)
+        {
+            carryOverTime -= TIME_STEP;
+        }
+        else
+        {
+            return;
+        }
+
         List<BalanceTileModel> underneathTiles = getTilesNearby(dryad.transform.position, 0);
         bool isChannelling = Input.GetKey(KeyCode.Space);
         if (isChannelling)
