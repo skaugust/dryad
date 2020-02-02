@@ -7686,7 +7686,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &664402051
 Transform:
   m_ObjectHideFlags: 0
@@ -10593,6 +10593,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a559a579ef5b384b8c4d26ebaea63ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameTime: 0
   dryad: {fileID: 170425436}
   mana: 10
   treeGroup: {fileID: 664402050}
