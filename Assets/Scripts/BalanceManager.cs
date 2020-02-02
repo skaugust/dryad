@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class BalanceManager : MonoBehaviour
 {
+    public float gameTime;
     public GameObject dryad;
     public float mana = 10;
     private float lastChannelTick = 0;
@@ -84,7 +85,7 @@ public class BalanceManager : MonoBehaviour
     private void UpdateGlobalPower()
     {
         // World power = 1 + floor(0.1 * # of trees + .05 * # of pure water tiles)
-        this.globalPower = 1 + UnityEngine.Mathf.FloorToInt(0.1f * treeList.Count + 0.05f * pureWaterList.Count);
+        this.globalPower = 1 + UnityEngine.Mathf.FloorToInt(0.075f * treeList.Count + 0.05f * pureWaterList.Count);
     }
 
     public void MakeTree(Vector2Int location)
@@ -98,6 +99,7 @@ public class BalanceManager : MonoBehaviour
         {
             pair.Value.UpdateTrees(this.treeList);
         }
+        UpdateGlobalPower();
     }
 
     public GameObject MakeLeaf(Vector2Int location)
@@ -124,6 +126,7 @@ public class BalanceManager : MonoBehaviour
 
     void Update()
     {
+        gameTime = Time.time;
         SimpleDryadMovement dryadLogic = dryad.GetComponent<SimpleDryadMovement>();
         // Using this instead of FixedUpdate, but trying to mirror the behavior.
         carryOverTime += Time.deltaTime;
@@ -148,20 +151,20 @@ public class BalanceManager : MonoBehaviour
             HashSet<BalanceTileModel> underneathTilesSet = new HashSet<BalanceTileModel>(underneathTiles);
             foreach (BalanceTileModel model in nearByTiles.Where(t => !underneathTilesSet.Contains(t)))
             {
-                model.Update(this, channelingMod);
+                model.Update(this, channelingMod, false);
             }
         }
 
         int standingMod = globalPower * (DRYAD_STANDING_MODIFIER + 1 + (isChannelling ? dryadChannellingModifier : 0));
         foreach (BalanceTileModel model in underneathTiles)
         {
-            model.Update(this, standingMod);
+            model.Update(this, standingMod, true);
         }
 
         // This could re-update channelled/stood upon tiles. Unclear if we care.
         foreach (BalanceTileModel model in bucketedModelsForUpdates[nextUpdateBucket])
         {
-            model.Update(this, globalPower);
+            model.Update(this, globalPower, true);
         }
         nextUpdateBucket++;
         nextUpdateBucket %= NUM_BUCKETS;
@@ -178,7 +181,13 @@ public class BalanceManager : MonoBehaviour
         }
 
         int desolaceCount = nearByTiles.Where(t => t.tier == BalanceTileModel.Tier.Desolation).Count();
+        int forestCount = nearByTiles.Where(t => t.tier == BalanceTileModel.Tier.DenseGrass || t.tier == BalanceTileModel.Tier.FloweringGrass).Count();
+        int grassCount = nearByTiles.Where(t => t.tier == BalanceTileModel.Tier.LightGrass || t.tier == BalanceTileModel.Tier.DenseGrass).Count();
+        int pollutionCount = nearByTiles.Where(t => t.tier == BalanceTileModel.Tier.LightPollution || t.tier == BalanceTileModel.Tier.DensePollution).Count();
         dryadLogic.AdjustDesolaceSound(desolaceCount / (float)nearByTiles.Count);
+        dryadLogic.AdjustForestSound(forestCount / (float)nearByTiles.Count);
+        dryadLogic.AdjustGrassSound(grassCount / (float)nearByTiles.Count);
+        dryadLogic.AdjustPollutionSound(pollutionCount / (float)nearByTiles.Count);
     }
 
     public List<BalanceTileModel> getAdjacentTiles(Vector2Int location)

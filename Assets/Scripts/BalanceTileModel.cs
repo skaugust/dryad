@@ -16,9 +16,9 @@ public class BalanceTileModel
         switch (tier)
         {
             case Tier.DensePollution:
-                return -8;
+                return -8 + (int)Mathf.Floor(Time.time / 180);
             case Tier.LightPollution:
-                return -4;
+                return -4 + (int)Mathf.Floor(Time.time / 180);
             case Tier.Desolation:
                 return 0;
             case Tier.LightGrass:
@@ -164,7 +164,7 @@ public class BalanceTileModel
 
         if (nearByTree.Any())
         {
-            modifier += 3;
+            modifier += 5;
         }
 
         // TODO(sky):
@@ -181,8 +181,8 @@ public class BalanceTileModel
         float desolationLower = -10;
         float lightGrassLower = 4;
         float denseGrassLower = 18;
-        float tallGrassLower = 35;
-        float floweringGrassLower = 60;
+        float tallGrassLower = 38;
+        float floweringGrassLower = 68;
 
         if (modifier < lightPollutionLower)
         {
@@ -309,7 +309,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) > CalculateTierAffect(Tier.TallGrass)) // If you are above this tier
             {
-                if (modifier - floweringGrassLower + 10 < rand * 10)
+                if (modifier - floweringGrassLower + 20 < rand * 20)
                 {
                     return Tier.TallGrass;
                 }
@@ -319,20 +319,26 @@ public class BalanceTileModel
         }
         else // Should be flowering grass
         {
-            /* if (this.tier == Tier.FloweringGrass || this.tier == Tier.TallGrass)
+            if (this.tier == Tier.FloweringGrass)
              {
                  return Tier.FloweringGrass;         // If already in range, stay what you are
              }
-             // TODO: CHECK IF TALL GRASS SPAWN WITHIN RANGE! If so, becomes flowering grass */
-            return Tier.FloweringGrass;
+            if (modifier - floweringGrassLower > rand * 10)
+            {
+                return Tier.FloweringGrass;
+            }
+            // TODO: CHECK IF TALL GRASS SPAWN WITHIN RANGE! If so, becomes flowering grass
+            return Tier.TallGrass;
         }
     }
 
     // extraModifier comes from Dryad's closeness, etc. TODO(sky): Pass in world power.
-    public void Update(BalanceManager manager, float extraModifier)
+    public void Update(BalanceManager manager, float extraModifier, bool allowNegative)
     {
         float modifier = CalcualteModifier(extraModifier);
+        if (modifier < 5 && !allowNegative) { return; }
         Tier newTier = CalculateTierFromModifier(modifier);
+
         if (capture == null)
         {
             capture = new MaskApplyCapture();
@@ -340,7 +346,7 @@ public class BalanceTileModel
             capture.manager = manager;
         }
 
-        if (newTier == Tier.FloweringGrass && !nearByTree.Any())
+        if (newTier == Tier.FloweringGrass && !nearByTree.Any() && UnityEngine.Random.Range(0f, 1f) > 0.995)
         {
             balanceManager.MakeTree(this.location);
         }
