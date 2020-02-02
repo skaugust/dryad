@@ -11,15 +11,9 @@ public class BalanceManager : MonoBehaviour
     public AutoTiledMask longGrassMask;
     public AutoTiledMask pollutionMask;
 
-    public GameObject factoryParentGroup;
-    [System.NonSerialized]
-    public List<Transform> factoryList = new List<Transform>();
-    public GameObject pollutionSpawnParentGroup;
-    [System.NonSerialized]
-    public List<Transform> pollutionSpawnList = new List<Transform>();
-    public GameObject treeParentGroup;
-    [System.NonSerialized]
-    public List<Transform> treeList = new List<Transform>();
+    public List<FactoryTag> factoryList = new List<FactoryTag>();
+    public List<PollutionTag> pollutionList = new List<PollutionTag>();
+    public List<TreeTag> treeList = new List<TreeTag>();
 
     Dictionary<MaskType, AutoTiledMask> maskMap;
     public enum MaskType
@@ -47,18 +41,9 @@ public class BalanceManager : MonoBehaviour
         maskMap.Add(MaskType.LongGrass, longGrassMask);
         maskMap.Add(MaskType.Pollution, pollutionMask);
 
-        foreach (Transform child in factoryParentGroup.transform)
-        {
-            factoryList.Add(child);
-        }
-        foreach (Transform child in pollutionSpawnParentGroup.transform)
-        {
-            pollutionSpawnList.Add(child);
-        }
-        foreach (Transform child in treeParentGroup.transform)
-        {
-            treeList.Add(child);
-        }
+        factoryList = new List<FactoryTag>(GameObject.FindObjectsOfType<FactoryTag>());
+        pollutionList = new List<PollutionTag>(GameObject.FindObjectsOfType<PollutionTag>());
+        treeList = new List<TreeTag>(GameObject.FindObjectsOfType<TreeTag>());
 
         for (int i = 0; i < NUM_BUCKETS; i++)
         {
@@ -79,7 +64,7 @@ public class BalanceManager : MonoBehaviour
 
         foreach (KeyValuePair<Vector2Int, BalanceTileModel> pair in balanceMap)
         {
-            pair.Value.init(this, getAdjacentTiles(pair.Key), getCloseTiles(pair.Key), getNearByTiles(pair.Key), this.factoryList, this.pollutionSpawnList, this.treeList);
+            pair.Value.init(this, getAdjacentTiles(pair.Key), getCloseTiles(pair.Key), getNearByTiles(pair.Key), this.factoryList, this.pollutionList, this.treeList);
         }
     }
 

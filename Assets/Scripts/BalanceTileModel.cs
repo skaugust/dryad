@@ -80,21 +80,21 @@ public class BalanceTileModel
         drawCenter3 = new Vector2(location.x / TILES_PER_GAME_UNIT, location.y / TILES_PER_GAME_UNIT) + offset;
     }
 
-    public void init(BalanceManager manager, List<BalanceTileModel> adjacentTiles, List<BalanceTileModel> closeTiles, List<BalanceTileModel> nearByTiles, List<Transform> rangeFactory, List<Transform> rangePollution, List<Transform> rangeTree)
+    public void init(BalanceManager manager, List<BalanceTileModel> adjacentTiles, List<BalanceTileModel> closeTiles, List<BalanceTileModel> nearByTiles, List<FactoryTag> rangeFactory, List<PollutionTag> rangePollution, List<TreeTag> rangeTree)
     {
         this.adjacentTiles = adjacentTiles;
         this.closeTiles = closeTiles;
         this.nearByTiles = nearByTiles;
 
-        this.nearByFactory = rangeFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        this.nearByFactory = rangeFactory.Select(t => t.transform).Where(f => Vector2.Distance(f.transform.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
         this.closeFactory = nearByFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
         this.undearneathFactory = this.closeFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
 
-        this.nearByPollution = rangePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        this.nearByPollution = rangePollution.Select(t => t.transform).Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
         this.closePollution = nearByPollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
         this.undearneathPollution = this.closePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
 
-        this.nearByTree = rangeTree.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        this.nearByTree = rangeTree.Select(t => t.transform).Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
 
         balanceManager = GameObject.FindObjectOfType<BalanceManager>();
         ADJACENT_TILE_MODIFIER = balanceManager.ADJACENT_TILE_MODIFIER / Convert.ToSingle(adjacentTiles.Count);
@@ -343,10 +343,6 @@ public class BalanceTileModel
                     }
                 }
                 */
-            }
-            else
-            {
-
             }
 
             if (newTier == Tier.DensePollution)
