@@ -10456,6 +10456,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dryad: {fileID: 170425436}
+  mana: 10
   treeGroup: {fileID: 664402050}
   treePrefab: {fileID: 900389347}
   shortGrassMask: {fileID: 195404940}
