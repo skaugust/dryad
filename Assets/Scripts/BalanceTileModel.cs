@@ -11,7 +11,7 @@ public class BalanceTileModel
         DensePollution, LightPollution, Desolation, LightGrass, DenseGrass, TallGrass, FloweringGrass
     }
 
-    private static int CalculateTierAffect(Tier tier)
+    public static int CalculateTierAffect(Tier tier)
     {
         switch (tier)
         {
@@ -46,7 +46,7 @@ public class BalanceTileModel
     private Vector2 drawCenter;
     private Vector2 drawCenter2;
     private Vector2 drawCenter3;
-    private Tier tier;
+    public Tier tier;
 
     public const float TILES_PER_GAME_UNIT = 5;
     private const float TEXTURE_1000_UNIT_LENGTH = 50 / TILES_PER_GAME_UNIT;
