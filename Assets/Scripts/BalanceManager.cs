@@ -17,6 +17,9 @@ public class BalanceManager : MonoBehaviour
     public List<FactoryTag> factoryList = new List<FactoryTag>();
     public List<PollutionTag> pollutionList = new List<PollutionTag>();
     public List<TreeTag> treeList = new List<TreeTag>();
+    // TODO(sky): Replace with PureWaterTag after we implement this.
+    public List<MonoBehaviour> pureWaterList = new List<MonoBehaviour>();
+    public float globalPower = 1f;
 
     Dictionary<MaskType, AutoTiledMask> maskMap;
     public enum MaskType
@@ -71,6 +74,12 @@ public class BalanceManager : MonoBehaviour
         }
     }
 
+    private void UpdateGlobalPower()
+    {
+        // World power = 1 + floor(0.1 * # of trees + .05 * # of pure water tiles)
+        this.globalPower = 1f + UnityEngine.Mathf.FloorToInt(0.1f * treeList.Count + 0.05f * pureWaterList.Count);
+    }
+
     public void MakeTree(Vector2Int location)
     {
         TreeTag newTree = GameObject.Instantiate(treePrefab);
@@ -88,12 +97,12 @@ public class BalanceManager : MonoBehaviour
     {
         foreach (BalanceTileModel model in getTilesNearby(dryad.transform.position))
         {
-            model.Update(this, DRYAD_STANDING_MODIFIER);
+            model.Update(this, globalPower * DRYAD_STANDING_MODIFIER + globalPower);
         }
 
         foreach (BalanceTileModel model in bucketedModelsForUpdates[nextUpdateBucket])
         {
-            model.Update(this, 0);
+            model.Update(this, globalPower);
         }
         nextUpdateBucket++;
         nextUpdateBucket %= NUM_BUCKETS;
