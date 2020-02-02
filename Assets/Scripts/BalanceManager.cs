@@ -178,7 +178,13 @@ public class BalanceManager : MonoBehaviour
         }
 
         int desolaceCount = nearByTiles.Where(t => t.tier == BalanceTileModel.Tier.Desolation).Count();
+        int forestCount = nearByTiles.Where(t => t.tier == BalanceTileModel.Tier.DenseGrass || t.tier == BalanceTileModel.Tier.FloweringGrass).Count();
+        int grassCount = nearByTiles.Where(t => t.tier == BalanceTileModel.Tier.LightGrass || t.tier == BalanceTileModel.Tier.DenseGrass).Count();
+        int pollutionCount = nearByTiles.Where(t => t.tier == BalanceTileModel.Tier.LightPollution || t.tier == BalanceTileModel.Tier.DensePollution).Count();
         dryadLogic.AdjustDesolaceSound(desolaceCount / (float)nearByTiles.Count);
+        dryadLogic.AdjustForestSound(forestCount / (float)nearByTiles.Count);
+        dryadLogic.AdjustGrassSound(grassCount / (float)nearByTiles.Count);
+        dryadLogic.AdjustPollutionSound(pollutionCount / (float)nearByTiles.Count);
     }
 
     public List<BalanceTileModel> getAdjacentTiles(Vector2Int location)

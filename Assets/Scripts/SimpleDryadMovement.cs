@@ -10,6 +10,9 @@ public class SimpleDryadMovement : MonoBehaviour
 
     public AudioSource channelSound;
     public AudioSource desolaceSound;
+    public AudioSource forestSound;
+    public AudioSource grassSound;
+    public AudioSource pollutionSound;
 
     void Start()
     {
@@ -24,6 +27,21 @@ public class SimpleDryadMovement : MonoBehaviour
     public void AdjustDesolaceSound(float amplitude)
     {
         desolaceSound.volume = amplitude;
+    }
+
+    public void AdjustForestSound(float amplitude)
+    {
+        forestSound.volume = amplitude;
+    }
+
+    public void AdjustGrassSound(float amplitude)
+    {
+        grassSound.volume = amplitude;
+    }
+
+    public void AdjustPollutionSound(float amplitude)
+    {
+        pollutionSound.volume = amplitude;
     }
 
     void Update()
