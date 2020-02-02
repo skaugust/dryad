@@ -197,7 +197,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 170425436}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.436, y: -0.003, z: 0}
+  m_LocalPosition: {x: 0, y: -0.003, z: 0}
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -253,6 +253,51 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!1 &195404938
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 195404939}
+  - component: {fileID: 195404940}
+  m_Layer: 0
+  m_Name: AutoTiledShortGrassMask
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &195404939
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 195404938}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1668473663}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &195404940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 195404938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79cb88b060b251f409b4467834612cad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maskPrefab: {fileID: 1710211824}
+  initColor: {r: 1, g: 1, b: 1, a: 0}
 --- !u!1 &400194855
 GameObject:
   m_ObjectHideFlags: 0
@@ -756,6 +801,51 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &922481872
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 922481873}
+  - component: {fileID: 922481874}
+  m_Layer: 0
+  m_Name: AutoTiledLongGrassMask
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &922481873
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 922481872}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1668473663}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &922481874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 922481872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79cb88b060b251f409b4467834612cad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maskPrefab: {fileID: 1710211824}
+  initColor: {r: 1, g: 1, b: 1, a: 0}
 --- !u!1 &990603104
 GameObject:
   m_ObjectHideFlags: 0
@@ -786,7 +876,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dryad: {fileID: 170425436}
-  natureMask: {fileID: 1710211824}
+  natureMask: {fileID: 195404940}
   pollutionMask: {fileID: 2035532060}
 --- !u!4 &990603106
 Transform:
@@ -944,14 +1034,13 @@ GameObject:
   m_Component:
   - component: {fileID: 1195635880}
   - component: {fileID: 1195635882}
-  - component: {fileID: 1195635881}
   m_Layer: 0
-  m_Name: TallGrassMask
+  m_Name: TallGrassMaskPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1195635880
 Transform:
   m_ObjectHideFlags: 0
@@ -966,18 +1055,6 @@ Transform:
   m_Father: {fileID: 1668473663}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1195635881
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1195635879}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e2373ff2ef466c4d912b0ff48fea3dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!331 &1195635882
 SpriteMask:
   m_ObjectHideFlags: 0
@@ -1510,6 +1587,8 @@ Transform:
   - {fileID: 1584163443}
   - {fileID: 1710211825}
   - {fileID: 1195635880}
+  - {fileID: 195404939}
+  - {fileID: 922481873}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1523,14 +1602,13 @@ GameObject:
   m_Component:
   - component: {fileID: 1710211825}
   - component: {fileID: 1710211824}
-  - component: {fileID: 1710211826}
   m_Layer: 0
-  m_Name: ShortGrassMask
+  m_Name: ShortGrassMaskPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!331 &1710211824
 SpriteMask:
   m_ObjectHideFlags: 0
@@ -1593,18 +1671,6 @@ Transform:
   m_Father: {fileID: 1668473663}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1710211826
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1710211823}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e2373ff2ef466c4d912b0ff48fea3dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1744492558
 GameObject:
   m_ObjectHideFlags: 0
@@ -1825,7 +1891,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2035532061}
   - component: {fileID: 2035532060}
-  - component: {fileID: 2035532062}
   m_Layer: 0
   m_Name: PollutionMask
   m_TagString: Untagged
@@ -1895,15 +1960,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2035532062
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2035532059}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e2373ff2ef466c4d912b0ff48fea3dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

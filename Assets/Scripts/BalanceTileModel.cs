@@ -142,15 +142,15 @@ public class BalanceTileModel
         {
             if (newTier == Tier.LightGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * Random.Range(.2f, .4f)));
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * Random.Range(.2f, .4f)), BalanceManager.MaskType.ShortGrass);
             }
             else if (newTier == Tier.TallGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * Random.Range(.5f, .8f)));
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * Random.Range(.5f, .8f)), BalanceManager.MaskType.ShortGrass);
             }
             else if (newTier == Tier.DenseGrass || newTier == Tier.FloweringGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS));
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS), BalanceManager.MaskType.LongGrass);
             }
             this.tier = newTier;
         }
