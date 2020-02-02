@@ -140,11 +140,11 @@ public class BalanceTileModel
         }
         if (closePollution.Any())
         {
-            modifier -= 8;
+            modifier -= 6;
         }
         if (nearByPollution.Any())
         {
-            modifier -= 3;
+            modifier -= 2;
         }
 
         if (nearByFactory.Any())
@@ -177,7 +177,7 @@ public class BalanceTileModel
     {
         float rand = UnityEngine.Random.Range(0f, 1f);
 
-        float lightPollutionLower = -70;
+        float lightPollutionLower = -60;
         float desolationLower = -15;
         float lightGrassLower = 5;
         float denseGrassLower = 20;
@@ -190,7 +190,7 @@ public class BalanceTileModel
             {
                 return Tier.DensePollution;
             }
-            if (modifier + 90 < rand * 10)
+            if (modifier - lightPollutionLower + 10 < rand * 10)
             {
                 return Tier.DensePollution;
             }
@@ -212,7 +212,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) > CalculateTierAffect(Tier.LightPollution)) // If you are above this tier
             {
-                if (modifier - desolationLower + 20 < rand * 20)
+                if (modifier - desolationLower + 10 < rand * 10)
                 {
                     return Tier.LightPollution;
                 }
