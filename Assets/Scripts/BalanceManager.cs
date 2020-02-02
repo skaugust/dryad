@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,19 +7,19 @@ public class BalanceManager : MonoBehaviour
 {
     public GameObject dryad;
 
+    public GameObject treeGroup;
+    public TreeTag treePrefab;
+
     public AutoTiledMask shortGrassMask;
     public AutoTiledMask longGrassMask;
     public AutoTiledMask pollutionMask;
 
-    public GameObject factoryParentGroup;
-    [System.NonSerialized]
-    public List<Transform> factoryList = new List<Transform>();
-    public GameObject pollutionSpawnParentGroup;
-    [System.NonSerialized]
-    public List<Transform> pollutionSpawnList = new List<Transform>();
-    public GameObject treeParentGroup;
-    [System.NonSerialized]
-    public List<Transform> treeList = new List<Transform>();
+    public List<FactoryTag> factoryList = new List<FactoryTag>();
+    public List<PollutionTag> pollutionList = new List<PollutionTag>();
+    public List<TreeTag> treeList = new List<TreeTag>();
+    // TODO(sky): Replace with PureWaterTag after we implement this.
+    public List<MonoBehaviour> pureWaterList = new List<MonoBehaviour>();
+    public float globalPower = 1f;
 
     Dictionary<MaskType, AutoTiledMask> maskMap;
     public enum MaskType
@@ -46,18 +47,9 @@ public class BalanceManager : MonoBehaviour
         maskMap.Add(MaskType.LongGrass, longGrassMask);
         maskMap.Add(MaskType.Pollution, pollutionMask);
 
-        foreach (Transform child in factoryParentGroup.transform)
-        {
-            factoryList.Add(child);
-        }
-        foreach (Transform child in pollutionSpawnParentGroup.transform)
-        {
-            pollutionSpawnList.Add(child);
-        }
-        foreach (Transform child in treeParentGroup.transform)
-        {
-            treeList.Add(child);
-        }
+        factoryList = new List<FactoryTag>(GameObject.FindObjectsOfType<FactoryTag>());
+        pollutionList = new List<PollutionTag>(GameObject.FindObjectsOfType<PollutionTag>());
+        treeList = new List<TreeTag>(GameObject.FindObjectsOfType<TreeTag>());
 
         for (int i = 0; i < NUM_BUCKETS; i++)
         {
@@ -69,16 +61,35 @@ public class BalanceManager : MonoBehaviour
             for (int j = -TILES_TO_INIT; j <= TILES_TO_INIT; j++)
             {
                 Vector2Int location = new Vector2Int(i, j);
-                BalanceTileModel model = new BalanceTileModel(location);
+                BalanceTileModel model = new BalanceTileModel(location, this);
                 balanceMap[location] = model;
-                int index = Random.Range(0, NUM_BUCKETS);
+                int index = UnityEngine.Random.Range(0, NUM_BUCKETS);
                 bucketedModelsForUpdates[index].Add(model);
             }
         }
 
         foreach (KeyValuePair<Vector2Int, BalanceTileModel> pair in balanceMap)
         {
-            pair.Value.init(this, getAdjacentTiles(pair.Key), getCloseTiles(pair.Key), getNearByTiles(pair.Key), this.factoryList, this.pollutionSpawnList, this.treeList);
+            pair.Value.init(getAdjacentTiles(pair.Key), getCloseTiles(pair.Key), getNearByTiles(pair.Key), this.factoryList, this.pollutionList, this.treeList);
+        }
+    }
+
+    private void UpdateGlobalPower()
+    {
+        // World power = 1 + floor(0.1 * # of trees + .05 * # of pure water tiles)
+        this.globalPower = 1f + UnityEngine.Mathf.FloorToInt(0.1f * treeList.Count + 0.05f * pureWaterList.Count);
+    }
+
+    public void MakeTree(Vector2Int location)
+    {
+        TreeTag newTree = GameObject.Instantiate(treePrefab);
+        newTree.transform.position = TileToWorldCoords(location);
+        newTree.transform.parent = treeGroup.transform;
+
+        treeList.Add(newTree);
+        foreach (KeyValuePair<Vector2Int, BalanceTileModel> pair in balanceMap)
+        {
+            pair.Value.UpdateTrees(this.treeList);
         }
     }
 
@@ -86,12 +97,12 @@ public class BalanceManager : MonoBehaviour
     {
         foreach (BalanceTileModel model in getTilesNearby(dryad.transform.position))
         {
-            model.Update(this, DRYAD_STANDING_MODIFIER);
+            model.Update(this, globalPower * DRYAD_STANDING_MODIFIER + globalPower);
         }
 
         foreach (BalanceTileModel model in bucketedModelsForUpdates[nextUpdateBucket])
         {
-            model.Update(this, 0);
+            model.Update(this, globalPower);
         }
         nextUpdateBucket++;
         nextUpdateBucket %= NUM_BUCKETS;
@@ -128,7 +139,7 @@ public class BalanceManager : MonoBehaviour
         List<BalanceTileModel> result = new List<BalanceTileModel>();
         for (int i = -3; i <= -3; i++)
         {
-            for (int j = -3; j <= -3; j++)
+            for (int j = -3; j <= 3; j++)
             {
                 if (Mathf.Abs(i) >= 1 || Mathf.Abs(j) >= 1)
                 {
@@ -148,7 +159,7 @@ public class BalanceManager : MonoBehaviour
         List<BalanceTileModel> result = new List<BalanceTileModel>();
         for (int i = -5; i <= -5; i++)
         {
-            for (int j = -5; j <= -5; j++)
+            for (int j = -5; j <= 5; j++)
             {
                 if (Mathf.Abs(i) >= 3 || Mathf.Abs(j) >= 3)
                 {
@@ -204,7 +215,7 @@ public class BalanceManager : MonoBehaviour
     }
 
     // |center| should be in game coordinates.
-    public void ColorTextureMasks(Vector2 center, int radius, MaskType maskType)
+    public void ColorTextureMasks(Vector2 center, int radius, MaskType maskType, bool positive)
     {
         AutoTiledMask mask = maskMap[maskType];
         int relativeX = (int)((center.x + 1.25f) * 100);
@@ -217,7 +228,7 @@ public class BalanceManager : MonoBehaviour
                 {
                     int x = i + relativeX;
                     int y = j + relativeY;
-                    mask.SetPixel(x, y, Color.white);
+                    mask.SetPixel(x, y, positive ? Color.white : Color.clear);
                 }
             }
         }

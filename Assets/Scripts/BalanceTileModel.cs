@@ -40,7 +40,7 @@ public class BalanceTileModel
     private List<BalanceTileModel> closeTiles;
     private List<BalanceTileModel> nearByTiles;
 
-    private const float UNDERNEATH_DISTANCE = 0.4f;
+    private const float UNDERNEATH_DISTANCE = 0.5f;
     private List<Transform> undearneathFactory;
     private List<Transform> undearneathPollution;
 
@@ -68,10 +68,11 @@ public class BalanceTileModel
 
     private BalanceManager balanceManager;
 
-    public BalanceTileModel(Vector2Int location)
+    public BalanceTileModel(Vector2Int location, BalanceManager manager)
     {
         this.tier = Tier.Desolation;
         this.location = location;
+        this.balanceManager = manager;
         Vector2 offset = UnityEngine.Random.insideUnitCircle * 0.07f;
         drawCenter = new Vector2(location.x / TILES_PER_GAME_UNIT, location.y / TILES_PER_GAME_UNIT) + offset;
         offset = UnityEngine.Random.insideUnitCircle * 0.5f;
@@ -80,26 +81,30 @@ public class BalanceTileModel
         drawCenter3 = new Vector2(location.x / TILES_PER_GAME_UNIT, location.y / TILES_PER_GAME_UNIT) + offset;
     }
 
-    public void init(BalanceManager manager, List<BalanceTileModel> adjacentTiles, List<BalanceTileModel> closeTiles, List<BalanceTileModel> nearByTiles, List<Transform> rangeFactory, List<Transform> rangePollution, List<Transform> rangeTree)
+    public void init(List<BalanceTileModel> adjacentTiles, List<BalanceTileModel> closeTiles, List<BalanceTileModel> nearByTiles, List<FactoryTag> rangeFactory, List<PollutionTag> rangePollution, List<TreeTag> rangeTree)
     {
         this.adjacentTiles = adjacentTiles;
         this.closeTiles = closeTiles;
         this.nearByTiles = nearByTiles;
 
-        this.nearByFactory = rangeFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
-        this.closeFactory = nearByFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
-        this.undearneathFactory = this.closeFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
+        this.nearByFactory = rangeFactory.Select(t => t.transform).Where(f => Vector2.Distance(f.transform.position, balanceManager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        this.closeFactory = nearByFactory.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
+        this.undearneathFactory = this.closeFactory.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
 
-        this.nearByPollution = rangePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
-        this.closePollution = nearByPollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
-        this.undearneathPollution = this.closePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
+        this.nearByPollution = rangePollution.Select(t => t.transform).Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        this.closePollution = nearByPollution.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
+        this.undearneathPollution = this.closePollution.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
 
-        this.nearByTree = rangeTree.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        UpdateTrees(rangeTree);
 
-        balanceManager = GameObject.FindObjectOfType<BalanceManager>();
         ADJACENT_TILE_MODIFIER = balanceManager.ADJACENT_TILE_MODIFIER / Convert.ToSingle(adjacentTiles.Count);
         CLOSE_TILE_MODIFIER = balanceManager.CLOSE_TILE_MODIFIER / Convert.ToSingle(closeTiles.Count);
         NEAR_BY_TILE_MODIFIER = balanceManager.NEAR_BY_TILE_MODIFIER / Convert.ToSingle(nearByTiles.Count);
+    }
+
+    public void UpdateTrees(List<TreeTag> rangeTree)
+    {
+        this.nearByTree = rangeTree.Select(t => t.transform).Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
     }
 
     private float CalcualteModifier(float extraModifier)
@@ -119,33 +124,34 @@ public class BalanceTileModel
             modifier += NEAR_BY_TILE_MODIFIER * CalculateTierAffect(other.tier);
         }
 
-        if (undearneathPollution.Count > 0)
+        if (undearneathPollution.Any())
         {
             modifier -= 20;
         }
-        if (closePollution.Count > 0)
+        if (closePollution.Any())
         {
             modifier -= 8;
         }
-        if (nearByPollution.Count > 0)
+        if (nearByPollution.Any())
         {
             modifier -= 3;
         }
 
-        if (nearByFactory.Count>0)
+        if (nearByFactory.Any())
         {
             if (modifier > 0)
             {
                 modifier = modifier / 2;
             }
         }
-        if( closeFactory.Count > 0)
+        if (closeFactory.Any())
         {
             if (modifier > 0)
             {
                 modifier = modifier / 2;
             }
         }
+
         if (nearByTree.Any())
         {
             modifier += 3;
@@ -153,27 +159,15 @@ public class BalanceTileModel
 
         // TODO(sky):
         // * Water
-        // * Tree
-        // * Pollution source
-        // * Factory
 
         return modifier;
     }
 
     private Tier CalculateTierFromModifier(float modifier)
     {
-        /*
-        So reasonable bounds are -143 to + 123
-        So like heavy pollution should be -80 or so
-        Light pollution is -20 to -80
-        Light grass is 5-15
-        Dense grass is 15-40
-        Tall grass is 40-80
-        Flowering tall grass is 80+
-        */
         float rand = UnityEngine.Random.Range(0f, 1f);
 
-        float lightPollutionLower = -60;
+        float lightPollutionLower = -70;
         float desolationLower = -15;
         float lightGrassLower = 5;
         float denseGrassLower = 20;
@@ -200,7 +194,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) < CalculateTierAffect(Tier.LightPollution)) // If you are below this tier
             {
-                if (modifier - lightPollutionLower > rand * 10)
+                if (modifier - lightPollutionLower > rand * 20)
                 {
                     return Tier.LightPollution;
                 }
@@ -208,7 +202,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) > CalculateTierAffect(Tier.LightPollution)) // If you are above this tier
             {
-                if (modifier - desolationLower + 10 < rand * 10)
+                if (modifier - desolationLower + 20 < rand * 20)
                 {
                     return Tier.LightPollution;
                 }
@@ -329,47 +323,112 @@ public class BalanceTileModel
     {
         float modifier = CalcualteModifier(extraModifier);
         Tier newTier = CalculateTierFromModifier(modifier);
+        if (capture == null)
+        {
+            capture = new MaskApplyCapture();
+            capture.model = this;
+            capture.manager = manager;
+        }
+
+        if (newTier == Tier.FloweringGrass && !nearByTree.Any())
+        {
+            balanceManager.MakeTree(this.location);
+        }
 
         if (newTier != this.tier)
         {
+            // If your new tier is lower than your current tier, we need to revert ourselves. This might remove mask changes our neighbors have performed. So re-apply them after that.
+            // This also applies to switching sides, although magnitude cannot be trusted in that case.
+            int newAffect = CalculateTierAffect(newTier);
+            int oldAffect = CalculateTierAffect(this.tier);
+            if (newAffect == 0 || Math.Abs(newAffect) < Math.Abs(oldAffect) || (newAffect * oldAffect) < 0)
+            {
+                capture.Apply(false);
+                /*
+                foreach (BalanceTileModel other in this.adjacentTiles)
+                {
+                    if (other.capture != null)
+                    {
+                        other.capture.Apply(true);
+                    }
+                }
+                */
+            }
+
             if (newTier == Tier.DensePollution)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f)), BalanceManager.MaskType.Pollution);
+                capture.range1 = (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f));
+                capture.range2 = 0;
+                capture.range3 = 0;
+                capture.maskType = BalanceManager.MaskType.Pollution;
             }
             else if (newTier == Tier.LightPollution)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.Pollution);
-                if (UnityEngine.Random.Range(0f, 1f) > 0.5)
-                {
-                    manager.ColorTextureMasks(drawCenter2, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.Pollution);
-                }
-                if (UnityEngine.Random.Range(0f, 1f) > 0.5)
-                {
-                    manager.ColorTextureMasks(drawCenter2, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.Pollution);
-                }
+                capture.range1 = (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f));
+                capture.range2 = UnityEngine.Random.Range(0f, 1f) > 0.5 ? (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)) : 0;
+                capture.range3 = UnityEngine.Random.Range(0f, 1f) > 0.5 ? (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)) : 0;
+                capture.maskType = BalanceManager.MaskType.Pollution;
             }
             else if (newTier == Tier.LightGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.ShortGrass);
-                if (UnityEngine.Random.Range(0f, 1f) > 0.5)
-                {
-                    manager.ColorTextureMasks(drawCenter2, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.ShortGrass);
-                }
-                if (UnityEngine.Random.Range(0f, 1f) > 0.5)
-                {
-                    manager.ColorTextureMasks(drawCenter2, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.ShortGrass);
-                }
+                capture.range1 = (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f));
+                capture.range2 = UnityEngine.Random.Range(0f, 1f) > 0.5 ? (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)) : 0;
+                capture.range3 = UnityEngine.Random.Range(0f, 1f) > 0.5 ? (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)) : 0;
+                capture.maskType = BalanceManager.MaskType.ShortGrass;
             }
             else if (newTier == Tier.DenseGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f)), BalanceManager.MaskType.ShortGrass);
+                capture.range1 = (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f));
+                capture.range2 = 0;
+                capture.range3 = 0;
+                capture.maskType = BalanceManager.MaskType.ShortGrass;
             }
             else if (newTier == Tier.TallGrass || newTier == Tier.FloweringGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f)), BalanceManager.MaskType.LongGrass);
+                capture.range1 = (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f));
+                capture.range2 = 0;
+                capture.range3 = 0;
+                capture.maskType = BalanceManager.MaskType.LongGrass;
+            }
+            else
+            {
+                capture.range1 = 0;
+                capture.range2 = 0;
+                capture.range3 = 0;
             }
 
             this.tier = newTier;
+            capture.Apply(true);
+        }
+    }
+
+    // The capture is purposefully modifiable, to avoid GC hitches.
+    private MaskApplyCapture capture;
+    private class MaskApplyCapture
+    {
+        public BalanceTileModel model;
+        public BalanceManager manager;
+
+        public int range1;
+        public int range2;
+        public int range3;
+
+        public BalanceManager.MaskType maskType;
+
+        public void Apply(bool positive)
+        {
+            if (range1 > 0)
+            {
+                manager.ColorTextureMasks(model.drawCenter, range1, maskType, positive);
+            }
+            if (range2 > 0)
+            {
+                manager.ColorTextureMasks(model.drawCenter2, range2, maskType, positive);
+            }
+            if (range3 > 0)
+            {
+                manager.ColorTextureMasks(model.drawCenter3, range3, maskType, positive);
+            }
         }
     }
 }
