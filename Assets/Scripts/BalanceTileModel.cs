@@ -87,9 +87,12 @@ public class BalanceTileModel
         this.closeTiles = closeTiles;
         this.nearByTiles = nearByTiles;
 
-        this.nearByFactory = rangeFactory.Select(t => t.transform).Where(f => Vector2.Distance(f.transform.position, balanceManager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
-        this.closeFactory = nearByFactory.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
-        this.undearneathFactory = this.closeFactory.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
+        UpdateFactories(rangeFactory);
+        // Purposefully only register underneath on startup. Because we only remove factories, we skip this to avoid re-registering.
+        foreach (Transform factoryTransform in this.undearneathFactory)
+        {
+            factoryTransform.gameObject.GetComponent<FactoryTag>().RegisterUnderneathTile(this);
+        }
 
         this.nearByPollution = rangePollution.Select(t => t.transform).Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
         this.closePollution = nearByPollution.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
@@ -105,6 +108,13 @@ public class BalanceTileModel
     public void UpdateTrees(List<TreeTag> rangeTree)
     {
         this.nearByTree = rangeTree.Select(t => t.transform).Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+    }
+
+    public void UpdateFactories(List<FactoryTag> rangeFactory)
+    {
+        this.nearByFactory = rangeFactory.Select(t => t.transform).Where(f => Vector2.Distance(f.transform.position, balanceManager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
+        this.closeFactory = nearByFactory.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
+        this.undearneathFactory = this.closeFactory.Where(f => Vector2.Distance(f.position, balanceManager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
     }
 
     private float CalcualteModifier(float extraModifier)
@@ -130,25 +140,25 @@ public class BalanceTileModel
         }
         if (closePollution.Any())
         {
-            modifier -= 8;
+            modifier -= 6;
         }
         if (nearByPollution.Any())
         {
-            modifier -= 3;
+            modifier -= 2;
         }
 
         if (nearByFactory.Any())
         {
             if (modifier > 0)
             {
-                modifier = modifier / 2;
+                modifier = modifier / 1.5f;
             }
         }
         if (closeFactory.Any())
         {
             if (modifier > 0)
             {
-                modifier = modifier / 2;
+                modifier = modifier / 1.5f;
             }
         }
 
@@ -172,7 +182,7 @@ public class BalanceTileModel
         float lightGrassLower = 5;
         float denseGrassLower = 20;
         float tallGrassLower = 40;
-        float floweringGrassLower = 80;
+        float floweringGrassLower = 60;
 
         if (modifier < lightPollutionLower)
         {
@@ -180,7 +190,7 @@ public class BalanceTileModel
             {
                 return Tier.DensePollution;
             }
-            if (modifier + 90 < rand * 10)
+            if (modifier - lightPollutionLower + 20 < rand * 20)
             {
                 return Tier.DensePollution;
             }
@@ -202,7 +212,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) > CalculateTierAffect(Tier.LightPollution)) // If you are above this tier
             {
-                if (modifier - desolationLower + 20 < rand * 20)
+                if (modifier - desolationLower + 10 < rand * 10)
                 {
                     return Tier.LightPollution;
                 }
@@ -309,12 +319,12 @@ public class BalanceTileModel
         }
         else // Should be flowering grass
         {
-            if (this.tier == Tier.FloweringGrass || this.tier == Tier.TallGrass)
+           /* if (this.tier == Tier.FloweringGrass || this.tier == Tier.TallGrass)
             {
                 return Tier.FloweringGrass;         // If already in range, stay what you are
             }
-            // TODO: CHECK IF TALL GRASS SPAWN WITHIN RANGE! If so, becomes flowering grass
-            return Tier.DenseGrass;
+            // TODO: CHECK IF TALL GRASS SPAWN WITHIN RANGE! If so, becomes flowering grass */
+            return Tier.FloweringGrass;
         }
     }
 

@@ -5,21 +5,38 @@ using UnityEngine;
 public class AutoTiledMask : MonoBehaviour
 {
     public SpriteMask maskPrefab;
-    private Dictionary<Vector2Int, Texture2D> maskMap = new Dictionary<Vector2Int, Texture2D>();
-    private HashSet<Vector2Int> dirty = new HashSet<Vector2Int>();
+    private List<Texture2D> maskMap = new List<Texture2D>();
+    private List<bool> dirty = new List<bool>();
 
     public Color initColor;
 
     private const int MASK_SIZE = 250;
 
-    void Start()
+    private const int MAX_TILE_ONE_AXIS = 30;
+    private const int OFFSET = MAX_TILE_ONE_AXIS / 2;
+    private int key(int x, int y)
     {
-
+        return x + OFFSET + ((y + OFFSET) * MAX_TILE_ONE_AXIS);
     }
 
-    void Update()
+    void Start()
     {
-        // Check for Camera movement, move.
+        for (int i = 0; i < MAX_TILE_ONE_AXIS * MAX_TILE_ONE_AXIS; i++)
+        {
+            maskMap.Add(null);
+            dirty.Add(false);
+        }
+
+        // Switch these for release/demo. Start up will be ~25 seconds, but should have less gameplay lag.
+        //int size = 12;
+        int size = 0;
+        for (int i = -size; i <= size; i++)
+        {
+            for (int j = -size; j <= size; j++)
+            {
+                initLocation(i, j);
+            }
+        }
     }
 
     // https://stackoverflow.com/questions/1082917/mod-of-negative-number-is-melting-my-brain
@@ -40,25 +57,28 @@ public class AutoTiledMask : MonoBehaviour
         x = Mathf.Clamp(x, 1, MASK_SIZE - 2);
         y = Mathf.Clamp(y, 1, MASK_SIZE - 2);
 
-        Vector2Int location = new Vector2Int(i, j);
-        dirty.Add(location);
-        if (!maskMap.ContainsKey(location))
+        int location = key(i, j);
+        dirty[location] = true;
+        if (maskMap[location] == null)
         {
-            initLocation(location);
+            initLocation(i, j);
         }
         maskMap[location].SetPixel(x, y, color);
     }
 
     public void Apply()
     {
-        foreach (Vector2Int location in dirty)
+        for (int i = 0; i < dirty.Count; i++)
         {
-            maskMap[location].Apply();
+            if (dirty[i])
+            {
+                maskMap[i].Apply();
+            }
+            dirty[i] = false;
         }
-        dirty.Clear();
     }
 
-    private void initLocation(Vector2Int location)
+    private void initLocation(int x, int y)
     {
         GameObject maskCopy = GameObject.Instantiate(maskPrefab.gameObject);
         maskCopy.transform.parent = this.transform;
@@ -66,9 +86,9 @@ public class AutoTiledMask : MonoBehaviour
 
         Texture2D theirTexture = maskPrefab.sprite.texture;
         Texture2D ourTexture = new Texture2D(MASK_SIZE, MASK_SIZE, theirTexture.format, false);
-        maskMap[location] = ourTexture;
+        maskMap[key(x, y)] = ourTexture;
         maskCopy.GetComponent<SpriteMask>().sprite = Sprite.Create(ourTexture, new Rect(new Vector2(0, 0), new Vector2(MASK_SIZE, MASK_SIZE)), new Vector2(.5f, .5f));
-        maskCopy.transform.position += new Vector3(location.x * 2.5f, location.y * 2.5f);
+        maskCopy.transform.position += new Vector3(x * 2.5f, y * 2.5f);
 
         Fill(ourTexture);
     }
