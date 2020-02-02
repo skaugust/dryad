@@ -156,7 +156,10 @@ public class BalanceManager : MonoBehaviour
             mask.Apply();
         }
 
-        mana = mana + 0.01f;
+        if (mana < 10f)
+        {
+            mana = mana + 0.01f;
+        }
     }
 
     public List<BalanceTileModel> getAdjacentTiles(Vector2Int location)
