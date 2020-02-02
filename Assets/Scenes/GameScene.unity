@@ -9322,8 +9322,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dryad: {fileID: 170425436}
-  treeGroup: {fileID: 0}
-  treePrefab: {fileID: 0}
+  treeGroup: {fileID: 664402050}
+  treePrefab: {fileID: 900389347}
   shortGrassMask: {fileID: 195404940}
   longGrassMask: {fileID: 922481874}
   pollutionMask: {fileID: 1144647168}

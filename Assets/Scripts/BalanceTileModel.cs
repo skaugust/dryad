@@ -182,7 +182,7 @@ public class BalanceTileModel
         float lightGrassLower = 5;
         float denseGrassLower = 20;
         float tallGrassLower = 40;
-        float floweringGrassLower = 80;
+        float floweringGrassLower = 60;
 
         if (modifier < lightPollutionLower)
         {
@@ -319,12 +319,12 @@ public class BalanceTileModel
         }
         else // Should be flowering grass
         {
-            if (this.tier == Tier.FloweringGrass || this.tier == Tier.TallGrass)
+           /* if (this.tier == Tier.FloweringGrass || this.tier == Tier.TallGrass)
             {
                 return Tier.FloweringGrass;         // If already in range, stay what you are
             }
-            // TODO: CHECK IF TALL GRASS SPAWN WITHIN RANGE! If so, becomes flowering grass
-            return Tier.DenseGrass;
+            // TODO: CHECK IF TALL GRASS SPAWN WITHIN RANGE! If so, becomes flowering grass */
+            return Tier.FloweringGrass;
         }
     }
 
