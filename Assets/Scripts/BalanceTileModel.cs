@@ -162,7 +162,7 @@ public class BalanceTileModel
     {
         float rand = UnityEngine.Random.Range(0f, 1f);
 
-        float lightPollutionLower = -60;
+        float lightPollutionLower = -70;
         float desolationLower = -15;
         float lightGrassLower = 5;
         float denseGrassLower = 20;
@@ -189,7 +189,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) < CalculateTierAffect(Tier.LightPollution)) // If you are below this tier
             {
-                if (modifier - lightPollutionLower > rand * 10)
+                if (modifier - lightPollutionLower > rand * 20)
                 {
                     return Tier.LightPollution;
                 }
@@ -197,7 +197,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) > CalculateTierAffect(Tier.LightPollution)) // If you are above this tier
             {
-                if (modifier - desolationLower + 10 < rand * 10)
+                if (modifier - desolationLower + 20 < rand * 20)
                 {
                     return Tier.LightPollution;
                 }
@@ -334,6 +334,7 @@ public class BalanceTileModel
             if (newAffect == 0 || Math.Abs(newAffect) < Math.Abs(oldAffect) || (newAffect * oldAffect) < 0)
             {
                 capture.Apply(false);
+                /*
                 foreach (BalanceTileModel other in this.adjacentTiles)
                 {
                     if (other.capture != null)
@@ -341,6 +342,7 @@ public class BalanceTileModel
                         other.capture.Apply(true);
                     }
                 }
+                */
             }
             else
             {
