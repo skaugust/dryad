@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class BalanceTileModel
 {
@@ -69,13 +70,19 @@ public class BalanceTileModel
         drawCenter3 = new Vector2(location.x / TILES_PER_GAME_UNIT, location.y / TILES_PER_GAME_UNIT) + offset;
     }
 
-    public void init(List<BalanceTileModel> adjacentTiles, List<BalanceTileModel> closeTiles, List<BalanceTileModel> nearByTiles, List<Transform> rangeFactory, List<Transform> rangePollution)
+    public void init(BalanceManager manager, List<BalanceTileModel> adjacentTiles, List<BalanceTileModel> closeTiles, List<BalanceTileModel> nearByTiles, List<Transform> rangeFactory, List<Transform> rangePollution)
     {
         this.adjacentTiles = adjacentTiles;
         this.closeTiles = closeTiles;
         this.nearByTiles = nearByTiles;
-        this.rangeFactory = rangeFactory;
-        this.rangePollution = rangePollution;
+
+        this.rangeFactory = rangeFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < 0.5f).ToList();
+        this.rangePollution = rangePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < 0.5f).ToList();
+
+        if (rangeFactory.Count != 0 || rangePollution.Count != 0)
+        {
+            Debug.Log("WEHRE WORKS " + rangeFactory.Count + " " + rangePollution.Count);
+        }
 
         balanceManager = GameObject.FindObjectOfType<BalanceManager>();
 
@@ -99,6 +106,21 @@ public class BalanceTileModel
         foreach (BalanceTileModel other in nearByTiles)
         {
             modifier += NEAR_BY_TILE_MODIFIER * CalculateTierAffect(other.tier);
+        }
+
+        foreach (Transform other in rangeFactory)
+        {
+            modifier -= 10;
+        }
+
+        foreach (Transform other in rangePollution)
+        {
+            modifier -= 10;
+        }
+
+        if (modifier < 0)
+        {
+            Debug.Log("NEGATIVE " + modifier);
         }
 
         // TODO(sky):

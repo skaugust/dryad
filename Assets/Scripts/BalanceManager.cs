@@ -73,7 +73,7 @@ public class BalanceManager : MonoBehaviour
             for (int j = -100; j <= 100; j++)
             {
                 Vector2Int location = new Vector2Int(i, j);
-                balanceMap[location].init(getAdjacentTiles(location), getCloseTiles(location), getNearByTiles(location), factoryList, pollutionSpawnList);
+                balanceMap[location].init(this, getAdjacentTiles(location), getCloseTiles(location), getNearByTiles(location), factoryList, pollutionSpawnList);
             }
         }
     }
@@ -188,6 +188,11 @@ public class BalanceManager : MonoBehaviour
         }
         texture.SetPixels32(clearColorArray);
         texture.Apply();
+    }
+
+    public Vector2 TileToWorldCoords(Vector2Int location)
+    {
+        return new Vector2((location.x + 1.25f) * 100f / BalanceTileModel.TILES_PER_GAME_UNIT, (location.y + 1.25f) * 100f / BalanceTileModel.TILES_PER_GAME_UNIT);
     }
 
     // |center| should be in game coordinates.
