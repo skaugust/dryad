@@ -10,7 +10,7 @@ public class AutoTiledMask : MonoBehaviour
 
     public Color initColor;
 
-    private const int MASK_SIZE = 250;
+    private const int MASK_SIZE = 260;
 
     void Start()
     {
@@ -34,6 +34,10 @@ public class AutoTiledMask : MonoBehaviour
 
         int j = Mathf.FloorToInt(y / (float)MASK_SIZE);
         y = mod(y, MASK_SIZE);
+
+        // Seems to write on the edges of the texture and wrap around. This apparently doesn't result in any awkward lines.
+        x = Mathf.Clamp(x, 1, MASK_SIZE - 2);
+        y = Mathf.Clamp(y, 1, MASK_SIZE - 2);
 
         Vector2Int location = new Vector2Int(i, j);
         dirty.Add(location);

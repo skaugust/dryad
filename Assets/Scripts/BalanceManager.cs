@@ -26,7 +26,7 @@ public class BalanceManager : MonoBehaviour
     private Dictionary<Vector2Int, BalanceTileModel> balanceMap = new Dictionary<Vector2Int, BalanceTileModel>();
 
     private int nextUpdateBucket = 0;
-    private const int NUM_BUCKETS = 1500;
+    private const int NUM_BUCKETS = 500;
     private List<List<BalanceTileModel>> bucketedModelsForUpdates = new List<List<BalanceTileModel>>();
 
     public float ADJACENT_TILE_MODIFIER = 10;
