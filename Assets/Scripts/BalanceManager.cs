@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -71,7 +72,7 @@ public class BalanceManager : MonoBehaviour
                 Vector2Int location = new Vector2Int(i, j);
                 BalanceTileModel model = new BalanceTileModel(location);
                 balanceMap[location] = model;
-                int index = Random.Range(0, NUM_BUCKETS);
+                int index = UnityEngine.Random.Range(0, NUM_BUCKETS);
                 bucketedModelsForUpdates[index].Add(model);
             }
         }
@@ -204,7 +205,7 @@ public class BalanceManager : MonoBehaviour
     }
 
     // |center| should be in game coordinates.
-    public void ColorTextureMasks(Vector2 center, int radius, MaskType maskType)
+    public Action<bool> ColorTextureMasks(Vector2 center, int radius, MaskType maskType, bool positive)
     {
         AutoTiledMask mask = maskMap[maskType];
         int relativeX = (int)((center.x + 1.25f) * 100);
@@ -217,9 +218,11 @@ public class BalanceManager : MonoBehaviour
                 {
                     int x = i + relativeX;
                     int y = j + relativeY;
-                    mask.SetPixel(x, y, Color.white);
+                    mask.SetPixel(x, y, positive ? Color.white : Color.clear);
                 }
             }
         }
+
+        return (callbackPositive) => ColorTextureMasks(center, radius, maskType, callbackPositive);
     }
 }
