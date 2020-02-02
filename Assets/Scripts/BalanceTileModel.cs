@@ -65,7 +65,6 @@ public class BalanceTileModel
         drawCenter3 = new Vector2(location.x / TILES_PER_GAME_UNIT, location.y / TILES_PER_GAME_UNIT) + offset;
     }
 
-
     public void init(List<BalanceTileModel> adjacentTiles, List<BalanceTileModel> closeTiles, List<BalanceTileModel> nearByTiles)
     {
         this.adjacentTiles = adjacentTiles;
@@ -155,10 +154,14 @@ public class BalanceTileModel
 
         if (newTier != this.tier)
         {
-            if (newTier == Tier.LightGrass)
+            if (newTier == Tier.DensePollution || newTier == Tier.LightPollution)
+            {
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f)), BalanceManager.MaskType.Pollution);
+            }
+            else if (newTier == Tier.LightGrass)
             {
                 manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.ShortGrass);
-                if (UnityEngine.Random.Range(0f,1f) > 0.5)
+                if (UnityEngine.Random.Range(0f, 1f) > 0.5)
                 {
                     manager.ColorTextureMasks(drawCenter2, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.ShortGrass);
                 }
@@ -175,6 +178,7 @@ public class BalanceTileModel
             {
                 manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f)), BalanceManager.MaskType.LongGrass);
             }
+
             this.tier = newTier;
         }
     }
