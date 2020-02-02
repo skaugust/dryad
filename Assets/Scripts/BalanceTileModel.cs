@@ -153,15 +153,15 @@ public class BalanceTileModel
         {
             if (newTier == Tier.LightGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.4f, .4f)));
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.4f, .8f)));
             }
             else if (newTier == Tier.TallGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.4f, .4f)));
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.2f, 1.8f)));
             }
             else if (newTier == Tier.DenseGrass || newTier == Tier.FloweringGrass)
             {
-                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.8f, .8f)));
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.2f, 1.8f)));
             }
             this.tier = newTier;
         }
