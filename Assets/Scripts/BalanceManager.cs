@@ -124,6 +124,7 @@ public class BalanceManager : MonoBehaviour
 
     void Update()
     {
+        SimpleDryadMovement dryadLogic = dryad.GetComponent<SimpleDryadMovement>();
         // Using this instead of FixedUpdate, but trying to mirror the behavior.
         carryOverTime += Time.deltaTime;
         if (carryOverTime > TIME_STEP)
@@ -136,14 +137,16 @@ public class BalanceManager : MonoBehaviour
         }
 
         List<BalanceTileModel> underneathTiles = getTilesNearby(dryad.transform.position, 0);
-        bool isChannelling = (Input.GetKey(KeyCode.Space) && Time.time > lastChannelTick + .25 && mana > 1);
+        List<BalanceTileModel> nearByTiles = getTilesNearby(dryad.transform.position, 4);
+        bool isChannelling = (Input.GetKey(KeyCode.Space) && Time.time > lastChannelTick + 1f && mana > 1);
         if (isChannelling)
         {
+            dryadLogic.PlayChannel();
             lastChannelTick = Time.time;
             mana = mana - 1;
             int channelingMod = globalPower * (dryadChannellingModifier + 1);
             HashSet<BalanceTileModel> underneathTilesSet = new HashSet<BalanceTileModel>(underneathTiles);
-            foreach (BalanceTileModel model in getTilesNearby(dryad.transform.position, 4).Where(t => !underneathTilesSet.Contains(t)))
+            foreach (BalanceTileModel model in nearByTiles.Where(t => !underneathTilesSet.Contains(t)))
             {
                 model.Update(this, channelingMod);
             }
@@ -173,6 +176,9 @@ public class BalanceManager : MonoBehaviour
         {
             mana = mana + 0.01f;
         }
+
+        int desolaceCount = nearByTiles.Where(t => t.tier == BalanceTileModel.Tier.Desolation).Count();
+        dryadLogic.AdjustDesolaceSound(desolaceCount / (float)nearByTiles.Count);
     }
 
     public List<BalanceTileModel> getAdjacentTiles(Vector2Int location)
