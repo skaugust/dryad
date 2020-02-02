@@ -241,7 +241,7 @@ public class BalanceTileModel
             {
                 if (modifier - 40 > rand * 10)
                 {
-                    // TODO: CHECK IF TALL GRASS SPAWN WITHIN RANGE!
+                    // TODO: CHECK IF TALL GRASS SPAWN WITHIN RANGE! If not, check if legal for this tile to become tall grass spawn point
                     return Tier.TallGrass;
                 }
                 return Tier.DenseGrass;
