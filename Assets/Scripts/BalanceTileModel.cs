@@ -44,7 +44,11 @@ public class BalanceTileModel
     private List<Transform> undearneathFactory;
     private List<Transform> undearneathPollution;
 
-    private const float NEAR_BY_DISTANCE = 2f;
+    private const float CLOSE_DISTANCE = 2f;
+    private List<Transform> closeFactory;
+    private List<Transform> closePollution;
+
+    private const float NEAR_BY_DISTANCE = 4f;
     private List<Transform> nearByFactory;
     private List<Transform> nearByPollution;
 
@@ -53,7 +57,7 @@ public class BalanceTileModel
     private Vector2 drawCenter3;
     public Tier tier;
 
-    public const float TILES_PER_GAME_UNIT = 5;
+    public const float TILES_PER_GAME_UNIT = 1.25f;
     private const float TEXTURE_1000_UNIT_LENGTH = 50 / TILES_PER_GAME_UNIT;
     private readonly float TEXTURE_1000_HYPOTENUS = Mathf.Sqrt((TEXTURE_1000_UNIT_LENGTH * TEXTURE_1000_UNIT_LENGTH) + (TEXTURE_1000_UNIT_LENGTH * TEXTURE_1000_UNIT_LENGTH));
 
@@ -82,12 +86,12 @@ public class BalanceTileModel
         this.nearByTiles = nearByTiles;
 
         this.nearByFactory = rangeFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
-        this.undearneathFactory = this.nearByFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
-        this.nearByFactory.RemoveAll(f => this.undearneathFactory.Contains(f));
+        this.closeFactory = nearByFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
+        this.undearneathFactory = this.closeFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
 
         this.nearByPollution = rangePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < NEAR_BY_DISTANCE).ToList();
-        this.undearneathPollution = this.nearByPollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
-        this.nearByPollution.RemoveAll(f => this.undearneathPollution.Contains(f));
+        this.closePollution = nearByPollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < CLOSE_DISTANCE).ToList();
+        this.undearneathPollution = this.closePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < UNDERNEATH_DISTANCE).ToList();
 
         balanceManager = GameObject.FindObjectOfType<BalanceManager>();
         ADJACENT_TILE_MODIFIER = balanceManager.ADJACENT_TILE_MODIFIER / Convert.ToSingle(adjacentTiles.Count);
@@ -116,11 +120,28 @@ public class BalanceTileModel
         {
             modifier -= 10;
         }
+
         foreach (Transform other in undearneathPollution)
         {
-            modifier -= 100;
+            modifier -= 12;
         }
+        foreach (Transform other in nearByPollution)
+        {
+            modifier -= 8;
+        }
+        foreach (Transform other in closePollution)
+        {
+            modifier -= 3;
+        }
+
         foreach (Transform other in nearByFactory)
+        {
+            if (modifier > 0)
+            {
+                modifier = modifier / 2;
+            }
+        }
+        foreach (Transform other in closeFactory)
         {
             if (modifier > 0)
             {
