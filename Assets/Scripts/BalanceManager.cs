@@ -16,6 +16,9 @@ public class BalanceManager : MonoBehaviour
     public GameObject pollutionSpawnParentGroup;
     [System.NonSerialized]
     public List<Transform> pollutionSpawnList = new List<Transform>();
+    public GameObject treeParentGroup;
+    [System.NonSerialized]
+    public List<Transform> treeList = new List<Transform>();
 
     Dictionary<MaskType, AutoTiledMask> maskMap;
     public enum MaskType
@@ -34,7 +37,7 @@ public class BalanceManager : MonoBehaviour
     public float NEAR_BY_TILE_MODIFIER = 1;
     public float DRYAD_STANDING_MODIFIER = 5;
 
-    private const int TILES_TO_INIT = 100;
+    private const int TILES_TO_INIT = 35;
 
     void Start()
     {
@@ -50,6 +53,10 @@ public class BalanceManager : MonoBehaviour
         foreach (Transform child in pollutionSpawnParentGroup.transform)
         {
             pollutionSpawnList.Add(child);
+        }
+        foreach (Transform child in treeParentGroup.transform)
+        {
+            treeList.Add(child);
         }
 
         for (int i = 0; i < NUM_BUCKETS; i++)
@@ -71,7 +78,7 @@ public class BalanceManager : MonoBehaviour
 
         foreach (KeyValuePair<Vector2Int, BalanceTileModel> pair in balanceMap)
         {
-            pair.Value.init(this, getAdjacentTiles(pair.Key), getCloseTiles(pair.Key), getNearByTiles(pair.Key), factoryList, pollutionSpawnList);
+            pair.Value.init(this, getAdjacentTiles(pair.Key), getCloseTiles(pair.Key), getNearByTiles(pair.Key), this.factoryList, this.pollutionSpawnList, this.treeList);
         }
     }
 
@@ -177,14 +184,7 @@ public class BalanceManager : MonoBehaviour
 
     public BalanceTileModel GetTileByLocation(Vector2Int location)
     {
-        if (balanceMap.ContainsKey(location))
-        {
-            return balanceMap[location];
-        }
-        else
-        {
-            return null;
-        }
+        return balanceMap.ContainsKey(location) ? balanceMap[location] : null;
     }
 
     public void Fill(Texture2D texture, Color32 color)
