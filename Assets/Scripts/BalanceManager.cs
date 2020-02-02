@@ -69,14 +69,9 @@ public class BalanceManager : MonoBehaviour
             }
         }
 
-        // TODO(sky): Could probably just iterate over the key/values in the map.
-        for (int i = -TILES_TO_INIT; i <= TILES_TO_INIT; i++)
+        foreach (KeyValuePair<Vector2Int, BalanceTileModel> pair in balanceMap)
         {
-            for (int j = -TILES_TO_INIT; j <= TILES_TO_INIT; j++)
-            {
-                Vector2Int location = new Vector2Int(i, j);
-                balanceMap[location].init(this, getAdjacentTiles(location), getCloseTiles(location), getNearByTiles(location), factoryList, pollutionSpawnList);
-            }
+            pair.Value.init(this, getAdjacentTiles(pair.Key), getCloseTiles(pair.Key), getNearByTiles(pair.Key), factoryList, pollutionSpawnList);
         }
     }
 
