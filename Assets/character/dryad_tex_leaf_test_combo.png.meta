@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 6f36d7f84845bd74d97d3d97ee2f6dc0
+=======
+guid: 364ffd1799ab52a4d88f0aa8a98e9d11
+>>>>>>> start healing factories, haven't replaced many.
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}

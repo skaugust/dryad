@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class BalanceManager : MonoBehaviour
 {
+    public int waterPowerMod = 0;
     public float gameTime;
     public GameObject dryad;
     public float mana = 10;
@@ -82,10 +83,10 @@ public class BalanceManager : MonoBehaviour
         }
     }
 
-    private void UpdateGlobalPower()
+    public void UpdateGlobalPower()
     {
         // World power = 1 + floor(0.1 * # of trees + .05 * # of pure water tiles)
-        this.globalPower = 1 + UnityEngine.Mathf.FloorToInt(0.075f * treeList.Count + 0.05f * pureWaterList.Count);
+        this.globalPower = 1 + UnityEngine.Mathf.FloorToInt(0.075f * treeList.Count) + waterPowerMod;
     }
 
     public void MakeTree(Vector2Int location)

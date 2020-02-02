@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class FactoryTag : MonoBehaviour
 {
+    public GameObject broken;
+    public GameObject healed;
+
     private List<BalanceTileModel> tileList = new List<BalanceTileModel>();
     public void RegisterUnderneathTile(BalanceTileModel tile)
     {
@@ -23,8 +26,15 @@ public class FactoryTag : MonoBehaviour
         if (sum / (float)count > 1.7f)
         {
             GameObject.FindObjectOfType<BalanceManager>().RemoveFactory(this);
-            // TODO(sky): Should switch models or something instead of destroying the GameObject.
-            GameObject.Destroy(this.gameObject);
+            if (healed != null && broken != null)
+            {
+                healed.SetActive(true);
+                broken.SetActive(false);
+            }
+            else
+            {
+                GameObject.Destroy(this.gameObject);
+            }
         }
     }
 }

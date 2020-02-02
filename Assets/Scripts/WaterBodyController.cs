@@ -6,12 +6,15 @@ using UnityEngine;
 public class WaterBodyController : MonoBehaviour
 {
     WaterBodyPurityStatus state;
+    public BalanceManager balanceManager;
     public enum WaterBodyPurityStatus
     {
         PURE = 0,
         DIRTY = 1,
         POLLUTED = 2
     }
+
+    public WaterBodyPurityStatus lastState;
     private Dictionary<WaterBodyPurityStatus, SortingLayer> layerMap;
 
     // Start is called before the first frame update
@@ -50,5 +53,17 @@ public class WaterBodyController : MonoBehaviour
             WaterBodyPurityStatus.POLLUTED;
 
         transform.GetComponent<SpriteMask>().frontSortingLayerID = layerMap[state].id;
+
+        if (lastState == WaterBodyPurityStatus.DIRTY && state == WaterBodyPurityStatus.PURE)
+        {
+            balanceManager.waterPowerMod = balanceManager.waterPowerMod + 1;
+            balanceManager.UpdateGlobalPower();
+        }
+        if (lastState == WaterBodyPurityStatus.PURE && state == WaterBodyPurityStatus.DIRTY)
+        {
+            balanceManager.waterPowerMod = balanceManager.waterPowerMod - 1;
+            balanceManager.UpdateGlobalPower();
+        }
+        lastState = state;
     }
 }
