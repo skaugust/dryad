@@ -93,15 +93,21 @@ public class SimpleDryadMovement : MonoBehaviour
         Vector2 movementDelta = movement.normalized * Time.deltaTime * speed;
         this.transform.position += new Vector3(movementDelta.x, movementDelta.y, 0);
 
-        // straight up is 0 rotation
-        // straight down is 180 along the y axis.
-        // SOH CAH TOA
+        bool newIdle = movement == Vector2.zero;
+        if (newIdle != this.isIdle)
+        {
+            this.isIdle = newIdle;
+            if (this.isIdle)
+            {
+                GetComponentInChildren<Animator>().Play("idle");
+            }
+            else
+            {
+                GetComponentInChildren<Animator>().Play("Take 001");
+            }
+        }
 
-        // tan(theta) = o(y) / a(x)
-        // arctan(y/x) = theta
-
-
-        if (movement != Vector2.zero)
+        if (!this.isIdle)
         {
             float angle = Mathf.Atan2(movement.x, movement.y) * Mathf.Rad2Deg;
             rotate1.transform.rotation = Quaternion.identity;
@@ -112,4 +118,6 @@ public class SimpleDryadMovement : MonoBehaviour
             rotate2.transform.Rotate(0, angle, 0);
         }
     }
+
+    private bool isIdle = true;
 }
