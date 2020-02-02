@@ -27,6 +27,7 @@ public class BalanceManager : MonoBehaviour
     public float ADJACENT_TILE_MODIFIER = 10;
     public float CLOSE_TILE_MODIFIER = 4;
     public float NEAR_BY_TILE_MODIFIER = 1;
+    public float DRYAD_STANDING_MODIFIER = 5;
 
     void Start()
     {
@@ -69,7 +70,7 @@ public class BalanceManager : MonoBehaviour
     {
         foreach (BalanceTileModel model in getTilesNearby(dryad.transform.position))
         {
-            model.Update(this, 20);
+            model.Update(this, DRYAD_STANDING_MODIFIER);
         }
 
         foreach (BalanceTileModel model in bucketedModelsForUpdates[nextUpdateBucket])
