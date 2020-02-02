@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class BalanceManager : MonoBehaviour
 {
+    public float gameTime;
     public GameObject dryad;
     public float mana = 10;
     private float lastChannelTick = 0;
@@ -84,7 +85,7 @@ public class BalanceManager : MonoBehaviour
     private void UpdateGlobalPower()
     {
         // World power = 1 + floor(0.1 * # of trees + .05 * # of pure water tiles)
-        this.globalPower = 1 + UnityEngine.Mathf.FloorToInt(0.1f * treeList.Count + 0.05f * pureWaterList.Count);
+        this.globalPower = 1 + UnityEngine.Mathf.FloorToInt(0.075f * treeList.Count + 0.05f * pureWaterList.Count);
     }
 
     public void MakeTree(Vector2Int location)
@@ -98,6 +99,7 @@ public class BalanceManager : MonoBehaviour
         {
             pair.Value.UpdateTrees(this.treeList);
         }
+        UpdateGlobalPower();
     }
 
     public GameObject MakeLeaf(Vector2Int location)
@@ -124,6 +126,7 @@ public class BalanceManager : MonoBehaviour
 
     void Update()
     {
+        gameTime = Time.time;
         SimpleDryadMovement dryadLogic = dryad.GetComponent<SimpleDryadMovement>();
         // Using this instead of FixedUpdate, but trying to mirror the behavior.
         carryOverTime += Time.deltaTime;
