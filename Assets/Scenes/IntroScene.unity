@@ -556,3 +556,4 @@ MonoBehaviour:
   tutorial1: {fileID: 1778921426}
   tutorial2: {fileID: 138784812}
   tutorial3: {fileID: 777504648}
+  camera: {fileID: 1381470025}
