@@ -76,26 +76,10 @@ public class BalanceTileModel
         this.closeTiles = closeTiles;
         this.nearByTiles = nearByTiles;
 
-        this.rangeFactory = new List<Transform>(rangeFactory.Where(f =>
-        {
-            float dist = Vector2.Distance(f.position, manager.TileToWorldCoords(this.location));
-            /*if (dist < 30f)
-            {
-                Debug.Log("f.position " + f.position + " manager.TileToWorldCoords(this.location) " + manager.TileToWorldCoords(this.location) + " distance " + Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)));
-            }*/
-
-            return dist < 2f; ;
-        }
-        ));
+        this.rangeFactory = new List<Transform>(rangeFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < 2f));
         this.rangePollution = rangePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < 1f).ToList();
 
-        //if (this.rangeFactory.Count != 0 || this.rangePollution.Count != 0)
-        //{
-        //Debug.Log("WEHRE WORKS " + this.rangeFactory.Count + " " + this.rangePollution.Count);
-        //}
-
         balanceManager = GameObject.FindObjectOfType<BalanceManager>();
-
         ADJACENT_TILE_MODIFIER = balanceManager.ADJACENT_TILE_MODIFIER / Convert.ToSingle(adjacentTiles.Count);
         CLOSE_TILE_MODIFIER = balanceManager.CLOSE_TILE_MODIFIER / Convert.ToSingle(closeTiles.Count);
         NEAR_BY_TILE_MODIFIER = balanceManager.NEAR_BY_TILE_MODIFIER / Convert.ToSingle(nearByTiles.Count);
@@ -120,19 +104,11 @@ public class BalanceTileModel
 
         foreach (Transform other in rangeFactory)
         {
-            //Debug.Log("FAC " + modifier);
-            modifier -= 100;
+            modifier -= 40;
         }
-
         foreach (Transform other in rangePollution)
         {
-            //Debug.Log("POL " + modifier);
-            modifier -= 100;
-        }
-
-        if (modifier < 0)
-        {
-            //Debug.Log("NEGATIVE " + modifier);
+            modifier -= 40;
         }
 
         // TODO(sky):
