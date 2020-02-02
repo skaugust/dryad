@@ -76,13 +76,25 @@ public class BalanceTileModel
         this.closeTiles = closeTiles;
         this.nearByTiles = nearByTiles;
 
-        this.rangeFactory = rangeFactory.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < 0.5f).ToList();
-        this.rangePollution = rangePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < 0.5f).ToList();
 
-        if (rangeFactory.Count != 0 || rangePollution.Count != 0)
+
+        this.rangeFactory = new List<Transform>(rangeFactory.Where(f =>
         {
-            Debug.Log("WEHRE WORKS " + rangeFactory.Count + " " + rangePollution.Count);
+            float dist = Vector2.Distance(f.position, manager.TileToWorldCoords(this.location));
+            /*if (dist < 30f)
+            {
+                Debug.Log("f.position " + f.position + " manager.TileToWorldCoords(this.location) " + manager.TileToWorldCoords(this.location) + " distance " + Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)));
+            }*/
+
+            return dist < 2f; ;
         }
+        ));
+        this.rangePollution = rangePollution.Where(f => Vector2.Distance(f.position, manager.TileToWorldCoords(this.location)) < 1f).ToList();
+
+        //if (this.rangeFactory.Count != 0 || this.rangePollution.Count != 0)
+        //{
+        //Debug.Log("WEHRE WORKS " + this.rangeFactory.Count + " " + this.rangePollution.Count);
+        //}
 
         balanceManager = GameObject.FindObjectOfType<BalanceManager>();
 
@@ -110,17 +122,19 @@ public class BalanceTileModel
 
         foreach (Transform other in rangeFactory)
         {
-            modifier -= 10;
+            //Debug.Log("FAC " + modifier);
+            modifier -= 100;
         }
 
         foreach (Transform other in rangePollution)
         {
-            modifier -= 10;
+            //Debug.Log("POL " + modifier);
+            modifier -= 100;
         }
 
         if (modifier < 0)
         {
-            Debug.Log("NEGATIVE " + modifier);
+            //Debug.Log("NEGATIVE " + modifier);
         }
 
         // TODO(sky):

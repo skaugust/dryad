@@ -34,6 +34,8 @@ public class BalanceManager : MonoBehaviour
     public float NEAR_BY_TILE_MODIFIER = 1;
     public float DRYAD_STANDING_MODIFIER = 5;
 
+    private const int TILES_TO_INIT = 100;
+
     void Start()
     {
         maskMap = new Dictionary<MaskType, AutoTiledMask>();
@@ -55,9 +57,9 @@ public class BalanceManager : MonoBehaviour
             bucketedModelsForUpdates.Add(new List<BalanceTileModel>());
         }
 
-        for (int i = -100; i <= 100; i++)
+        for (int i = -TILES_TO_INIT; i <= TILES_TO_INIT; i++)
         {
-            for (int j = -100; j <= 100; j++)
+            for (int j = -TILES_TO_INIT; j <= TILES_TO_INIT; j++)
             {
                 Vector2Int location = new Vector2Int(i, j);
                 BalanceTileModel model = new BalanceTileModel(location);
@@ -68,9 +70,9 @@ public class BalanceManager : MonoBehaviour
         }
 
         // TODO(sky): Could probably just iterate over the key/values in the map.
-        for (int i = -100; i <= 100; i++)
+        for (int i = -TILES_TO_INIT; i <= TILES_TO_INIT; i++)
         {
-            for (int j = -100; j <= 100; j++)
+            for (int j = -TILES_TO_INIT; j <= TILES_TO_INIT; j++)
             {
                 Vector2Int location = new Vector2Int(i, j);
                 balanceMap[location].init(this, getAdjacentTiles(location), getCloseTiles(location), getNearByTiles(location), factoryList, pollutionSpawnList);
@@ -168,15 +170,26 @@ public class BalanceManager : MonoBehaviour
         {
             for (int j = lower.y; j <= upper.y; j++)
             {
-                list.Add(getTileByLocation(new Vector2Int(i, j)));
+                BalanceTileModel tile = GetTileByLocation(new Vector2Int(i, j));
+                if (tile != null)
+                {
+                    list.Add(tile);
+                }
             }
         }
         return list;
     }
 
-    public BalanceTileModel getTileByLocation(Vector2Int location)
+    public BalanceTileModel GetTileByLocation(Vector2Int location)
     {
-        return balanceMap[location];
+        if (balanceMap.ContainsKey(location))
+        {
+            return balanceMap[location];
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public void Fill(Texture2D texture, Color32 color)
@@ -192,7 +205,7 @@ public class BalanceManager : MonoBehaviour
 
     public Vector2 TileToWorldCoords(Vector2Int location)
     {
-        return new Vector2((location.x + 1.25f) * 100f / BalanceTileModel.TILES_PER_GAME_UNIT, (location.y + 1.25f) * 100f / BalanceTileModel.TILES_PER_GAME_UNIT);
+        return new Vector2(location.x / BalanceTileModel.TILES_PER_GAME_UNIT, location.y / BalanceTileModel.TILES_PER_GAME_UNIT);
     }
 
     // |center| should be in game coordinates.
