@@ -140,18 +140,18 @@ public class BalanceTileModel
         }
         if (closePollution.Any())
         {
-            modifier -= 6;
+            modifier -= 9;
         }
         if (nearByPollution.Any())
         {
-            modifier -= 2;
+            modifier -= 3;
         }
 
         if (nearByFactory.Any())
         {
             if (modifier > 0)
             {
-                modifier = modifier / 1.5f;
+                modifier = modifier / 1.8f;
             }
         }
         if (closeFactory.Any())
@@ -178,7 +178,7 @@ public class BalanceTileModel
         float rand = UnityEngine.Random.Range(0f, 1f);
 
         float lightPollutionLower = -70;
-        float desolationLower = -15;
+        float desolationLower = -10;
         float lightGrassLower = 5;
         float denseGrassLower = 20;
         float tallGrassLower = 40;
@@ -319,11 +319,11 @@ public class BalanceTileModel
         }
         else // Should be flowering grass
         {
-           /* if (this.tier == Tier.FloweringGrass || this.tier == Tier.TallGrass)
-            {
-                return Tier.FloweringGrass;         // If already in range, stay what you are
-            }
-            // TODO: CHECK IF TALL GRASS SPAWN WITHIN RANGE! If so, becomes flowering grass */
+            /* if (this.tier == Tier.FloweringGrass || this.tier == Tier.TallGrass)
+             {
+                 return Tier.FloweringGrass;         // If already in range, stay what you are
+             }
+             // TODO: CHECK IF TALL GRASS SPAWN WITHIN RANGE! If so, becomes flowering grass */
             return Tier.FloweringGrass;
         }
     }
@@ -399,6 +399,11 @@ public class BalanceTileModel
                 capture.range2 = 0;
                 capture.range3 = 0;
                 capture.maskType = BalanceManager.MaskType.LongGrass;
+
+                if (newTier == Tier.FloweringGrass)
+                {
+                    leaf = manager.MakeLeaf(location);
+                }
             }
             else
             {
@@ -407,10 +412,18 @@ public class BalanceTileModel
                 capture.range3 = 0;
             }
 
+            if (newTier != Tier.FloweringGrass && this.leaf != null)
+            {
+                GameObject.Destroy(leaf);
+                this.leaf = null;
+            }
+
             this.tier = newTier;
             capture.Apply(true);
         }
     }
+
+    private GameObject leaf = null;
 
     // The capture is purposefully modifiable, to avoid GC hitches.
     private MaskApplyCapture capture;
