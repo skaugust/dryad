@@ -6,16 +6,14 @@ public class BalanceManager : MonoBehaviour
 {
     public GameObject dryad;
 
-    public SpriteMask pollutionMask;
-    private Texture2D pollutionMaskTexture;
-
     public AutoTiledMask shortGrassMask;
     public AutoTiledMask longGrassMask;
+    public AutoTiledMask pollutionMask;
 
     Dictionary<MaskType, AutoTiledMask> maskMap;
     public enum MaskType
     {
-        ShortGrass, LongGrass
+        ShortGrass, LongGrass, Pollution
     }
 
     private Dictionary<Vector2Int, BalanceTileModel> balanceMap = new Dictionary<Vector2Int, BalanceTileModel>();
@@ -34,9 +32,7 @@ public class BalanceManager : MonoBehaviour
         maskMap = new Dictionary<MaskType, AutoTiledMask>();
         maskMap.Add(MaskType.ShortGrass, shortGrassMask);
         maskMap.Add(MaskType.LongGrass, longGrassMask);
-
-        pollutionMaskTexture = pollutionMask.sprite.texture;
-        Fill(pollutionMaskTexture, Color.white);
+        maskMap.Add(MaskType.Pollution, pollutionMask);
 
         for (int i = 0; i < NUM_BUCKETS; i++)
         {
@@ -85,7 +81,6 @@ public class BalanceManager : MonoBehaviour
         {
             mask.Apply();
         }
-        pollutionMaskTexture.Apply();
     }
 
     public List<BalanceTileModel> getAdjacentTiles(Vector2Int location)
@@ -194,7 +189,6 @@ public class BalanceManager : MonoBehaviour
                     int x = i + relativeX;
                     int y = j + relativeY;
                     mask.SetPixel(x, y, Color.white);
-                    // pollutionMaskTexture.SetPixel(x, y, Color.clear);
                 }
             }
         }
