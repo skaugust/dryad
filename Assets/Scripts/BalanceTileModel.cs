@@ -123,19 +123,26 @@ public class BalanceTileModel
         */
         float rand = UnityEngine.Random.Range(0f, 1f);
 
-        if (modifier < -80)
+        float lightPollutionLower = -80;
+        float desolationLower = -30;
+        float lightGrassLower = 5;
+        float denseGrassLower = 20;
+        float tallGrassLower = 40;
+        float floweringGrassLower = 80;
+
+        if (modifier < lightPollutionLower)
         {
             if (this.tier == Tier.DensePollution)
             {
                 return Tier.DensePollution;
             }
-            if (modifier + 100 < rand * 20)
+            if (modifier + 90 < rand * 10)
             {
                 return Tier.DensePollution;
             }
             return Tier.LightPollution;
         }
-        else if (modifier < -30) // Should be light pollution
+        else if (modifier < desolationLower) // Should be light pollution
         {
             if (this.tier == Tier.LightPollution)
             {
@@ -143,7 +150,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) < CalculateTierAffect(Tier.LightPollution)) // If you are below this tier
             {
-                if (modifier + 80 > rand * 20)
+                if (modifier - lightPollutionLower > rand * 10)
                 {
                     return Tier.LightPollution;
                 }
@@ -151,7 +158,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) > CalculateTierAffect(Tier.LightPollution)) // If you are above this tier
             {
-                if (modifier + 50 < rand * 20)
+                if (modifier - desolationLower + 10 < rand * 10)
                 {
                     return Tier.LightPollution;
                 }
@@ -159,7 +166,7 @@ public class BalanceTileModel
             }
             return Tier.LightPollution; // Should never come up
         }
-        else if (modifier < 5) // Should be desolation
+        else if (modifier < lightGrassLower) // Should be desolation
         {
             if (this.tier == Tier.Desolation)
             {
@@ -167,7 +174,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) < CalculateTierAffect(Tier.Desolation)) // If you are below this tier
             {
-                if (modifier + 30 > rand * 20)
+                if (modifier - desolationLower > rand * 10)
                 {
                     return Tier.Desolation;
                 }
@@ -175,7 +182,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) > CalculateTierAffect(Tier.Desolation)) // If you are above this tier
             {
-                if (modifier + 5 < rand * 10)
+                if (modifier - lightGrassLower + 10 < rand * 10)
                 {
                     return Tier.Desolation;
                 }
@@ -183,7 +190,7 @@ public class BalanceTileModel
             }
             return Tier.Desolation; // Should never come up
         }
-        else if (modifier < 15) // Should be light grass
+        else if (modifier < denseGrassLower) // Should be light grass
         {
             if (this.tier == Tier.LightGrass)
             {
@@ -191,7 +198,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) < CalculateTierAffect(Tier.LightGrass)) // If you are below this tier
             {
-                if (modifier - 5 > rand * 5)
+                if (modifier - lightGrassLower > rand * 5)
                 {
                     return Tier.LightGrass;
                 }
@@ -199,7 +206,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) > CalculateTierAffect(Tier.LightGrass)) // If you are above this tier
             {
-                if (modifier - 10 < rand * 5)
+                if (modifier - denseGrassLower + 5 < rand * 5)
                 {
                     return Tier.LightGrass;
                 }
@@ -207,7 +214,7 @@ public class BalanceTileModel
             }
             return Tier.LightGrass; // Should never come up
         }
-        else if (modifier < 40) // Should be dense grass
+        else if (modifier < tallGrassLower) // Should be dense grass
         {
             if (this.tier == Tier.DenseGrass)
             {
@@ -215,7 +222,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) < CalculateTierAffect(Tier.DenseGrass)) // If you are below this tier
             {
-                if (modifier - 15 > rand * 10)
+                if (modifier - denseGrassLower > rand * 10)
                 {
                     return Tier.DenseGrass;
                 }
@@ -223,7 +230,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) > CalculateTierAffect(Tier.DenseGrass)) // If you are above this tier
             {
-                if (modifier - 30 < rand * 10)
+                if (modifier - tallGrassLower + 10 < rand * 10)
                 {
                     return Tier.DenseGrass;
                 }
@@ -231,7 +238,7 @@ public class BalanceTileModel
             }
             return Tier.DenseGrass; // Should never come up
         }
-        else if (modifier < 80) // Should be tall grass
+        else if (modifier < floweringGrassLower) // Should be tall grass
         {
             if (this.tier == Tier.TallGrass)
             {
@@ -239,7 +246,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) < CalculateTierAffect(Tier.TallGrass)) // If you are below this tier
             {
-                if (modifier - 40 > rand * 10)
+                if (modifier - tallGrassLower > rand * 10)
                 {
                     // TODO: CHECK IF TALL GRASS SPAWN WITHIN RANGE! If not, check if legal for this tile to become tall grass spawn point
                     return Tier.TallGrass;
@@ -248,7 +255,7 @@ public class BalanceTileModel
             }
             if (CalculateTierAffect(this.tier) > CalculateTierAffect(Tier.TallGrass)) // If you are above this tier
             {
-                if (modifier - 70 < rand * 10)
+                if (modifier - floweringGrassLower + 10 < rand * 10)
                 {
                     return Tier.TallGrass;
                 }
@@ -275,9 +282,21 @@ public class BalanceTileModel
 
         if (newTier != this.tier)
         {
-            if (newTier == Tier.DensePollution || newTier == Tier.LightPollution)
+            if (newTier == Tier.DensePollution)
             {
                 manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f)), BalanceManager.MaskType.Pollution);
+            }
+            else if (newTier == Tier.LightPollution)
+            {
+                manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.Pollution);
+                if (UnityEngine.Random.Range(0f, 1f) > 0.5)
+                {
+                    manager.ColorTextureMasks(drawCenter2, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.Pollution);
+                }
+                if (UnityEngine.Random.Range(0f, 1f) > 0.5)
+                {
+                    manager.ColorTextureMasks(drawCenter2, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.Pollution);
+                }
             }
             else if (newTier == Tier.LightGrass)
             {
@@ -291,11 +310,11 @@ public class BalanceTileModel
                     manager.ColorTextureMasks(drawCenter2, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(.3f, .6f)), BalanceManager.MaskType.ShortGrass);
                 }
             }
-            else if (newTier == Tier.TallGrass)
+            else if (newTier == Tier.DenseGrass)
             {
                 manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f)), BalanceManager.MaskType.ShortGrass);
             }
-            else if (newTier == Tier.DenseGrass || newTier == Tier.FloweringGrass)
+            else if (newTier == Tier.TallGrass || newTier == Tier.FloweringGrass)
             {
                 manager.ColorTextureMasks(drawCenter, (int)(TEXTURE_1000_HYPOTENUS * UnityEngine.Random.Range(1.1f, 1.3f)), BalanceManager.MaskType.LongGrass);
             }
