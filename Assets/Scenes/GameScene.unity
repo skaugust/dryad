@@ -312,7 +312,7 @@ GameObject:
   - component: {fileID: 340432759}
   - component: {fileID: 340432758}
   m_Layer: 0
-  m_Name: Mine1 (4)
+  m_Name: Mine5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -326,7 +326,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 340432756}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -13.19, y: 7.1, z: 9.17041}
+  m_LocalPosition: {x: -10.5199995, y: 6.2999997, z: 0}
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
   m_Father: {fileID: 2125818023}
@@ -1006,7 +1006,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 943419867}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -13.45, y: -1.04, z: 9.17041}
+  m_LocalPosition: {x: -10.78, y: -1.84, z: 0}
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
   m_Father: {fileID: 2125818023}
@@ -1685,7 +1685,7 @@ GameObject:
   - component: {fileID: 1678851217}
   - component: {fileID: 1678851216}
   m_Layer: 0
-  m_Name: Mine1 (3)
+  m_Name: Mine4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1699,7 +1699,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1678851214}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -9.32, y: 3.25, z: 9.17041}
+  m_LocalPosition: {x: -6.6499996, y: 2.4499998, z: 0}
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
   m_Father: {fileID: 2125818023}
@@ -2028,7 +2028,7 @@ GameObject:
   - component: {fileID: 1927454004}
   - component: {fileID: 1927454003}
   m_Layer: 0
-  m_Name: Mine1 (2)
+  m_Name: Mine3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2042,7 +2042,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1927454001}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12, y: 3.42, z: 9.17041}
+  m_LocalPosition: {x: -9.33, y: 2.62, z: 0}
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
   m_Father: {fileID: 2125818023}
@@ -2160,7 +2160,7 @@ GameObject:
   - component: {fileID: 1992613195}
   - component: {fileID: 1992613194}
   m_Layer: 0
-  m_Name: Mine1 (1)
+  m_Name: Mine2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2174,7 +2174,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1992613192}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -10.94, y: 1.33, z: 9.17041}
+  m_LocalPosition: {x: -8.2699995, y: 0.53, z: 0}
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
   m_Father: {fileID: 2125818023}
@@ -2381,7 +2381,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2125818022}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.2834556, y: 1.418244, z: -12.0390625}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 943419868}

@@ -14,6 +14,7 @@ public class AutoTiledMask : MonoBehaviour
 
     void Start()
     {
+
     }
 
     void Update()
