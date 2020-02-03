@@ -28,8 +28,8 @@ public class AutoTiledMask : MonoBehaviour
         }
 
         // Switch these for release/demo. Start up will be ~25 seconds, but should have less gameplay lag.
-        int size = 12;
-        //int size = 0;
+        //int size = 12;
+        int size = 0;
         for (int i = -size; i <= size; i++)
         {
             for (int j = -size; j <= size; j++)
