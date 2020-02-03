@@ -86,7 +86,7 @@ public class BalanceManager : MonoBehaviour
     public void UpdateGlobalPower()
     {
         // World power = 1 + floor(0.1 * # of trees + .05 * # of pure water tiles)
-        this.globalPower = 1 + UnityEngine.Mathf.FloorToInt(0.075f * treeList.Count) + waterPowerMod;
+        this.globalPower = 1 + UnityEngine.Mathf.FloorToInt(0.1f * treeList.Count) + waterPowerMod;
     }
 
     public void MakeTree(Vector2Int location)
