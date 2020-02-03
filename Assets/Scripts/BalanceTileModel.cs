@@ -40,7 +40,7 @@ public class BalanceTileModel
     private List<BalanceTileModel> closeTiles;
     private List<BalanceTileModel> nearByTiles;
 
-    private const float UNDERNEATH_DISTANCE = 0.5f;
+    private const float UNDERNEATH_DISTANCE = 0.6f;
     private List<Transform> undearneathFactory;
     private List<Transform> undearneathPollution;
 
@@ -320,9 +320,9 @@ public class BalanceTileModel
         else // Should be flowering grass
         {
             if (this.tier == Tier.FloweringGrass)
-             {
-                 return Tier.FloweringGrass;         // If already in range, stay what you are
-             }
+            {
+                return Tier.FloweringGrass;         // If already in range, stay what you are
+            }
             if (modifier - floweringGrassLower > rand * 10)
             {
                 return Tier.FloweringGrass;
