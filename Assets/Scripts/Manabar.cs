@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Manabar : MonoBehaviour
 {
-    private const int MAX_MANA_SCALE = 400;
+    private const int MAX_MANA_SCALE = 1;
     private const int MAX_MANA_VALUE = 10;
 
     private BalanceManager manaSource;
